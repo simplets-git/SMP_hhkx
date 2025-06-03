@@ -1,0 +1,19 @@
+{
+  "name": "simplets-terminal",
+  "version": "0.8.0",
+  "description": "SIMPLETS Terminal - An underground and experimental DeSoc journey",
+  "main": "start_server.py",
+  "scripts": {
+    "start": "python3 start_server.py",
+    "dev": "python3 start_server.py",
+    "stop": "pkill -f 'python3 start_server.py' || echo 'Server not running'"
+  },
+  "author": "SIMPLETS Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {}
+
+}

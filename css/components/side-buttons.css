@@ -1,0 +1,38 @@
+/**
+ * Side buttons styling
+ */
+
+.side-buttons-container {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.side-button {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-transform: lowercase;
+}
+
+.side-button:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .side-buttons-container {
+    display: none;
+  }
+}

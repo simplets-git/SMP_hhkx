@@ -1,0 +1,117 @@
+/* 
+ * Terminal Theme Variables
+ * Core variables for terminal themes
+ */
+
+/* Dark Theme (Default) */
+:root {
+  /* Core Colors */
+  --bg-color: black;
+  --text-color: white;
+  --border-color: white;
+  --heading-color: #ffffff;
+  --emphasis-color: #eeeeee;
+  
+  /* Selection Colors */
+  --selection-bg-color: #8A00FF; /* Purple */
+  --selection-text-color: #FFFFFF;
+  
+  /* Links */
+  --link-color: #2196f3;
+  --link-hover-color: #64b5f6;
+  
+  /* Command & Code Input */
+  --command-bg-color: white;
+  --command-text-color: black;
+  --code-bg-color: rgba(255, 255, 255, 0.1);
+  --code-text-color: #ffffff;
+  
+  /* Terminal Elements */
+  --user-color: var(--text-color);
+  --path-color: #1E88E5;
+  --prompt-color: var(--text-color);
+  --help-command-color: var(--text-color);
+  
+  /* UI Feedback Colors */
+  --error-color: var(--text-color);
+  --success-color: var(--text-color);
+  --warning-color: var(--text-color);
+  --info-color: var(--text-color);
+  
+  /* Interactive Elements */
+  --cursor-color: white;
+  
+  /* SVG Colors */
+  --svg-bg-color: white;
+  --svg-text-color: black;
+  
+  /* Typography */
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-size-base: 18px;
+  --line-height-base: 22px;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Terminal Specific Variables */
+  --terminal-base-row-height: var(--line-height-base);
+  --char-width: 9.6px;
+  --letter-spacing: 0.4px;
+  --terminal-row-spacing: 0px;
+  --terminal-prompt-spacing: 0px;
+  
+  /* Layout Variables */
+  --left-animation-width: 300px;
+  --terminal-left-gutter: 80px;
+  --terminal-content-indent: 20px;
+  
+  /* Transitions */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+}
+
+/* Light Theme */
+body.light-theme {
+  /* Core Colors */
+  --bg-color: white;
+  --text-color: black;
+  --border-color: black;
+  --heading-color: #121212;
+  --emphasis-color: #202020;
+  
+  /* Selection Colors */
+  --selection-bg-color: #8A00FF; /* Purple */
+  --selection-text-color: #FFFFFF;
+  
+  /* Links */
+  --link-color: #1565c0;
+  --link-hover-color: #1976d2;
+  
+  /* Command & Code Input */
+  --command-bg-color: black;
+  --command-text-color: white;
+  --code-bg-color: rgba(0, 0, 0, 0.05);
+  --code-text-color: #121212;
+  
+  /* Terminal Elements */
+  --user-color: var(--text-color);
+  --path-color: #0D47A1;
+  --prompt-color: var(--text-color);
+  --help-command-color: var(--text-color);
+  
+  /* UI Feedback Colors */
+  --error-color: var(--text-color);
+  --success-color: var(--text-color);
+  --warning-color: var(--text-color);
+  --info-color: var(--text-color);
+  
+  /* Interactive Elements */
+  --cursor-color: black;
+  
+  /* SVG Colors */
+  --svg-bg-color: black;
+  --svg-text-color: white;
+}

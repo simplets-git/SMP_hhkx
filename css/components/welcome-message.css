@@ -1,0 +1,53 @@
+/* Welcome message styling */
+#welcome-message {
+  position: absolute; /* Changed from relative */
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0.4px;
+  color: var(--text-color);
+  padding: 0;
+  margin: 0;
+  height: 110px; /* 5 lines at 22px line height */
+  overflow: hidden;
+  pointer-events: none; /* Allow clicks to pass through to terminal */
+  z-index: 10; /* Ensure it's on top */
+  /* background-color: lightblue !important; Temporary debug background REMOVED */
+  /* flex-shrink: 0; Removed, not applicable for absolute positioning */
+}
+
+.welcome-line {
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  white-space: pre;
+}
+
+.command-highlight {
+  color: var(--command-text-color);
+}
+
+/* Ensure terminal starts after welcome message */
+#terminal {
+  /* margin-top: 0; Removed */
+  /* flex-grow: 1; Removed */
+  /* overflow: hidden; Removed for the #terminal div itself */
+  position: absolute;
+  top: 110px; /* Positioned below the welcome message */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: lightpink !important; Temporary debug background REMOVED */
+}
+
+/* Make terminal container properly position the welcome message and terminal */
+#terminal-container {
+  /* display: flex; Removed */
+  /* flex-direction: column; Removed */
+  position: relative; /* New positioning context */
+  height: 100%; /* Make container fill viewport height (as body/html are 100vh) */
+  overflow: hidden; /* Contain absolutely positioned children */
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPLETS Terminal v0.8.0</title>
+    <!-- CSS Imports -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme-toggle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <!-- Custom Terminal CSS -->
+    <link rel="stylesheet" href="css/custom-terminal.css">
+    <!-- Custom cursor styling -->
+    <!-- Underscore cursor fix -->
+    <!-- Terminal cursor override (removed) -->
+    <!-- Welcome message styling (removed) -->
+    <!-- Custom purple highlight styling -->
+    <link rel="stylesheet" href="css/purple-highlight.css">
+    <!-- Terminal font styling -->
+    <style>
+        .terminal, .cmd, .terminal-output, .terminal-output div, .terminal-output span, .cmd span,
+        .terminal-prompt, .terminal-input { /* Added .terminal-prompt and .terminal-input */
+            font-size: 18px !important;
+            font-family: 'Share Tech Mono', monospace !important;
+            line-height: 22px !important;
+            letter-spacing: 0.4px !important;
+            background-color: transparent !important; /* Ensure no white background */
+        }
+    </style>
+</head>
+<body class="dark-theme loading">
+    <!-- Loading Screen (outside terminal for mobile compatibility) -->
+    <div id="loading-screen">
+        <div id="loading-container">
+            <pre id="ascii-art"></pre>
+            <div id="loading-text">Loading SIMPLETS v0.8.0...</div>
+        </div>
+    </div>
+    
+    <!-- Mobile View -->
+    <div class="mobile-view">
+        <div class="mobile-logo" id="mobile-logo">□_□</div>
+        <div class="mobile-about">
+            <strong>SIMPLETS is the cult of digital awakening:</strong><br>
+            An underground and experimental DeSoc journey.<br>
+            Designed around free speech and pseudonym friendly values.<br>
+            A convergence where A.I. and creative souls unite.<br>
+            Built by codes, from character to character.
+        </div>
+        <div class="mobile-message">
+            To access the SIMPLETS terminal, please open this site on a desktop device.
+        </div>
+    </div>
+    
+    <!-- Main Terminal Interface -->
+    <div id="terminal-container">
+        <!-- Theme toggle button - positioned at the top right -->
+        <div id="theme-toggle">□_□</div>
+        
+        <!-- Fixed welcome message container (removed) -->
+        
+        <div id="terminal"></div>
+        <div id="version-display">Version: v0.8.0</div>
+        
+        <!-- Side buttons removed, keeping only theme toggle -->
+    </div>
+
+    <!-- Custom Terminal scripts -->
+    
+    <!-- Scroll handler for better scrolling experience -->
+    <script src="js/utils/scroll-handler.js"></script>
+    
+    <!-- Main JavaScript module that imports all other modules -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+/* 
+ * Project command output styles
+ *
+ * This file contains styling specific to the project command
+ * with a focus on terminal-like appearance and consistent spacing.
+ */
+
+/* Project content wrapper */
+.project-content-wrapper {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  white-space: pre-wrap;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+/* Project header styling */
+.project-header {
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-size-base);
+  text-align: left;
+  font-family: var(--font-mono);
+  line-height: var(--terminal-base-row-height);
+  height: var(--terminal-base-row-height);
+}
+
+/* Project SVG header */
+.project-svg-header {
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  text-align: left;
+  line-height: var(--terminal-base-row-height);
+  height: var(--terminal-base-row-height);
+}
+
+/* Project paragraphs */
+.project-paragraph {
+  margin: 0 0 var(--terminal-row-spacing) 0;
+  padding: 0;
+  line-height: var(--line-height-base);
+  min-height: var(--terminal-base-row-height);
+  height: auto; /* Allow height to expand based on content */
+  font-size: var(--font-size-base);
+  font-family: var(--font-mono);
+  text-align: left;
+  display: block;
+  white-space: normal;
+  overflow: visible; /* Allow text to be fully visible */
+}
+
+/* Terminal output container - ensure proper stacking context */
+#terminal-output {
+  isolation: isolate;
+  position: relative;
+  z-index: 1;
+}
+
+/* Command response text - ensure proper stacking context */
+.command-response {
+  position: relative;
+  z-index: 2;
+}
+
+/* Dedicated SVG block for project command */
+.project-svg-block {
+  height: auto !important;
+  line-height: normal !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  position: relative !important;
+  margin: 5px 0 15px 0 !important; /* Increased bottom margin for spacing */
+  padding: 0 !important;
+  width: 100% !important;
+  display: block !important;
+  clear: both !important;
+  z-index: 10 !important; /* Ensure proper stacking */
+  /* Add isolation to prevent overlapping */
+  isolation: isolate !important;
+  /* Force a new stacking context */
+  transform: translateZ(0) !important;
+}
+
+/* Project SVG container */
+.project-svg-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  width: 100%;
+  position: relative;
+  clear: both;
+  overflow: visible;
+  z-index: 5;
+  /* Add isolation to prevent overlapping */
+  isolation: isolate;
+}
+
+/* SVG wrapper */
+.project-svg-wrapper {
+  display: inline-block;
+  margin: 0 10px 20px;
+  position: relative;
+  vertical-align: top;
+  z-index: 10;
+}
+
+/* SVG circle element */
+.project-circle-svg {
+  display: block;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.project-circle-svg:hover {
+  transform: scale(1.05);
+}
+
+/* Theme-aware circle fill */
+.project-circle {
+  fill: var(--svg-bg-color);
+}
+
+/* Theme-aware text styling */
+.project-circle-text {
+  fill: var(--svg-text-color);
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+/* Clear spacer to prevent overlaps */
+.project-clear-spacer {
+  display: block !important;
+  width: 100% !important;
+  height: 40px !important; /* Increased height for better separation */
+  clear: both !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  z-index: 1 !important;
+  /* Force a new stacking context */
+  transform: translateZ(0) !important;
+}
+
+/* Final spacer for complete command isolation */
+.project-final-spacer {
+  display: block !important;
+  width: 100% !important;
+  height: 20px !important;
+  clear: both !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  z-index: 1 !important;
+  /* Force a new stacking context */
+  transform: translateZ(0) !important;
+}
+
+/* Spacer for vertical rhythm */
+.project-spacer {
+  height: 15px;
+  width: 100%;
+  clear: both;
+  display: block;
+  position: relative;
+}
+
+/* Project footer text */
+.project-footer {
+  margin-top: 15px;
+  clear: both;
+  position: relative;
+  z-index: 1;
+  font-size: var(--font-size-base);
+  font-family: var(--font-mono);
+  line-height: var(--line-height-base);
+}
+
+.project-footer p {
+  margin: 5px 0;
+  line-height: var(--line-height-base);
+  font-size: var(--font-size-base);
+  font-family: var(--font-mono);
+}
+
+/* Ensure proper stacking context for terminal rows */
+.terminal-row {
+  position: relative;
+  z-index: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .project-svg-wrapper {
+    margin: 0 10px 0 0;
+    display: block;
+  }
+  
+  .project-svg-wrapper img {
+    height: 120px;
+    width: 120px;
+  }
+  
+  .project-spacer {
+    height: 10px;
+  }
+}

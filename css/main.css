@@ -1,0 +1,119 @@
+/* Main CSS file for Terminal Interface */
+
+/* Import variables first */
+@import url('variables.css');
+
+/* Import Share Tech Mono font directly */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+/* Import component styles */
+@import 'components/loading.css';
+@import 'components/mobile.css';
+@import 'components/video.css';
+@import 'components/flexible-content.css';
+@import 'components/project.css';
+@import 'components/command-output.css';
+@import 'components/terminal.css';
+@import 'components/side-buttons.css';
+
+/* Import animations */
+@import 'animations/sidebar.css';
+@import 'animations/matrix.css';
+
+/* Enforce consistent box-sizing and font across all elements */
+* {
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+}
+
+/* Base styles for body and html */
+body, html {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-y: auto; /* Allow body scroll if necessary, ideally terminal handles its own */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  transition: var(--theme-transition);
+}
+
+/* Hide scrollbars */
+body::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+/* Custom Text Selection Styles */
+::selection {
+  background-color: var(--selection-bg-color);
+  color: var(--selection-text-color);
+}
+::-moz-selection { /* Firefox */
+  background-color: var(--selection-bg-color);
+  color: var(--selection-text-color);
+}
+
+/* Main terminal container adjustments */
+#terminal-container {
+  height: 100vh; /* Make container take full viewport height */
+  box-sizing: border-box; /* Include padding in height calculation */
+  padding-top: 66px; /* Approximately 3 lines of text height (22px * 3) */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Version display */
+#version-display {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  color: var(--text-color);
+  font-size: 0.8rem;
+  opacity: 0.7;
+  z-index: 10;
+}
+
+/* Terminal logo */
+/* Theme toggle button styling is now in theme-toggle.css */
+
+/* SVG container for project display */
+.svg-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Project content styling */
+.project-svg-block {
+  width: 100%;
+  margin: 10px 0;
+  position: relative;
+}
+
+.project-title {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: var(--heading-color);
+}
+
+.project-desc {
+  margin-bottom: 10px;
+  line-height: var(--line-height-base);
+}
+
+/* Project text styling */
+.project-above-text {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.project-below-text {
+  margin-top: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 10px;
+}

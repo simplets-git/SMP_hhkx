@@ -1,0 +1,23 @@
+/* Terminal Component Styles */
+
+/* This file contains custom styling for the terminal component 
+ * that works with our custom JavaScript terminal implementation. */
+
+/* Terminal command styling */
+.terminal-command {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Help command in welcome message */
+.help-command {
+    color: var(--text-color);
+    font-weight: normal;
+    display: inline-block;
+    white-space: pre; /* Preserve spaces within the span */
+}
+
+/* Error message styling */
+.error-message {
+    color: var(--text-color);
+}

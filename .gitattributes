@@ -1,0 +1,167 @@
+# Set default behavior to automatically normalize line endings
+* text=auto eol=lf
+
+# Ensure files with bash shebang are executed with /bin/sh
+*.sh text eol=lf
+
+# Set the desired line ending for these file types
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.less text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.eot binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.otf binary
+
+# Files that should keep CRLF line endings on Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.sh text eol=lf
+
+# Prevent Windows users from having issues with these files
+package-lock.json text eol=lf
+yarn.lock text eol=lf
+*.sln text eol=crlf
+*.suo binary
+*.user text=auto
+*.userosscache text=auto
+*.sln.docstates text=auto
+
+# Force LF line endings on these files
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+*.nvmrc text eol=lf
+*.eslintrc text eol=lf
+*.prettierrc text eol=lf
+*.babelrc text eol=lf
+*.stylelintrc text eol=lf
+*.browserslistrc text eol=lf
+*.npmrc text eol=lf
+*.yarnrc text eol=lf
+*.yarnclean text eol=lf
+*.yarn-integrity text eol=lf
+
+# Mark generated files as generated for GitHub
+/dist/* linguist-generated
+/build/* linguist-generated
+/coverage/* linguist-generated
+
+# Mark test files as test files for GitHub
+/test/*.js linguist-language=JavaScript
+/test/**/*.js linguist-language=JavaScript
+
+# Mark documentation files as documentation for GitHub
+/README.md linguist-documentation
+/CHANGELOG.md linguist-documentation
+/CONTRIBUTING.md linguist-documentation
+/LICENSE linguist-documentation
+
+# Mark configuration files as configuration for GitHub
+/.github/* linguist-generated
+/.vscode/* linguist-generated
+/.editorconfig linguist-generated
+/.eslintrc.js linguist-generated
+/.prettierrc linguist-generated
+/.gitattributes linguist-generated
+/.gitignore linguist-generated
+/.nvmrc linguist-generated
+/.yarnrc linguist-generated
+/.yarnignore linguist-generated
+
+# Mark lockfiles as generated
+package-lock.json linguist-generated
+yarn.lock linguist-generated
+
+# Mark test fixtures as generated
+/test/fixtures/**/* linguist-generated
+
+# Mark benchmark files as generated
+/benchmark/**/* linguist-generated
+
+# Mark examples as generated
+/examples/**/* linguist-generated
+
+# Mark coverage directories as generated
+/coverage/**/* linguist-generated
+
+# Mark build output as generated
+/dist/**/* linguist-generated
+/build/**/* linguist-generated
+/out/**/* linguist-generated
+
+# Mark cache directories as generated
+/.cache/**/* linguist-generated
+/.temp/**/* linguist-generated
+/.tmp/**/* linguist-generated
+
+# Mark IDE specific files as generated
+.idea/* linguist-generated
+.vscode/* linguist-generated
+*.sublime-workspace linguist-generated
+*.sublime-project linguist-generated
+
+# Mark OS generated files as generated
+.DS_Store linguist-generated
+Thumbs.db linguist-generated
+
+# Mark logs as generated
+*.log linguist-generated
+npm-debug.log* linguist-generated
+yarn-debug.log* linguist-generated
+yarn-error.log* linguist-generated
+
+# Mark environment files as generated
+.env linguist-generated
+.env.* linguist-generated
+!.env.example
+
+# Mark lock files as generated
+package-lock.json linguist-generated
+yarn.lock linguist-generated
+
+# Mark build output as generated
+/dist/**/* linguist-generated
+/build/**/* linguist-generated
+/out/**/* linguist-generated
+
+# Mark cache directories as generated
+/.cache/**/* linguist-generated
+/.temp/**/* linguist-generated
+/.tmp/**/* linguist-generated
+
+# Mark IDE specific files as generated
+.idea/* linguist-generated
+.vscode/* linguist-generated
+*.sublime-workspace linguist-generated
+*.sublime-project linguist-generated
+
+# Mark OS generated files as generated
+.DS_Store linguist-generated
+Thumbs.db linguist-generated
+
+# Mark logs as generated
+*.log linguist-generated
+npm-debug.log* linguist-generated
+yarn-debug.log* linguist-generated
+yarn-error.log* linguist-generated

@@ -1,0 +1,400 @@
+html, body {
+  background-color: var(--bg-color) !important; /* Use theme variable */
+  color: var(--text-color); /* Use theme variable */
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  transition: var(--theme-transition);
+  -webkit-touch-callout: text; /* iOS Safari */
+  -webkit-user-select: text;   /* Safari */
+  -khtml-user-select: text;    /* Konqueror HTML */
+  -moz-user-select: text;      /* Firefox */
+  -ms-user-select: text;       /* Internet Explorer/Edge */
+  user-select: text;           /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+/* Text selection styling */
+::selection {
+  background: var(--selection-bg-color);
+  color: var(--selection-text-color);
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background: var(--selection-bg-color);
+  color: var(--selection-text-color);
+  text-shadow: none;
+}
+
+/**
+ * Custom Terminal CSS
+ * Styling for our custom JavaScript terminal emulator
+ */
+
+/* Main terminal container - the outer container */
+#terminal-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden; /* Prevent scrollbars on the container */
+  background-color: var(--bg-color); /* Use theme variable */
+}
+
+/* Inner terminal */
+#terminal {
+  /* Calculate width to leave space on both sides */
+  width: calc(100% - 600px);
+  height: calc(100% - 60px);
+  margin-left: calc(var(--left-animation-width, 300px) + 50px);
+  margin-right: 250px;
+  margin-top: 20px;
+  overflow: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: none; /* Removed border */
+  position: relative;
+  z-index: 10;
+  max-width: 950px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.3;
+  letter-spacing: 0.4px;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* No ASCII art border */
+
+/* Terminal output area */
+.terminal-output {
+  padding: 0 5px;
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  display: block;
+}
+
+/* Welcome message styling */
+.welcome-message {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+}
+
+/* Spacer after welcome message */
+.welcome-spacer {
+  display: block;
+  min-height: 22px;
+  margin: 0;
+  padding: 0;
+  content: '';
+}
+
+/* Command container styling */
+.command-container {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+}
+
+.command-container .terminal-command {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* Command output styling */
+.command-output {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* Error, success, and warning messages */
+.terminal-error,
+.terminal-success,
+.terminal-warning {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* Input line */
+.terminal-input-line {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--bg-color);
+  z-index: 10;
+  border: none !important;
+  outline: none !important;
+}
+
+.terminal-prompt {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.prompt-line {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: 22px;
+  line-height: 22px;
+  white-space: pre-wrap;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: var(--text-color);
+  width: 100%;
+  position: relative; /* Essential for cursor positioning */
+  border: none !important;
+  outline: none !important;
+}
+
+.terminal-input {
+  margin: 0 0 0 5px;
+  padding: 0;
+  line-height: 22px;
+  height: 22px;
+  min-height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  outline: none;
+  flex-grow: 1;
+  vertical-align: top;
+}
+
+/* Ensure proper wrapping for long content */
+.terminal-output > * {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+}
+
+/* Remove any default browser styles */
+.terminal-output div,
+.terminal-output p,
+.terminal-output span {
+  margin: 0;
+  padding: 0;
+  line-height: 22px;
+  min-height: 22px;
+  display: block;
+}
+
+/* Terminal inner class */
+.terminal-inner {
+  background-color: transparent;
+  color: var(--text-color);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  letter-spacing: var(--letter-spacing);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: var(--theme-transition);
+}
+
+/* Ensure all terminal elements have the same transition */
+.terminal-inner *,
+.terminal-output *,
+.terminal-input-line *,
+.cmd,
+.cmd-prompt,
+.cmd span,
+.terminal-output div,
+.terminal-output span,
+.terminal-prompt,
+.terminal-input {
+  transition: var(--theme-transition);
+}
+
+/* Input line container */
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 5px;
+  background-color: var(--bg-color);
+  min-height: var(--terminal-base-row-height);
+  line-height: 1;
+  transition: var(--theme-transition);
+  position: relative; /* Ensure it's a positioning context for absolute elements */
+}
+
+.terminal-prompt {
+  color: var(--text-color);
+  margin-right: 0; /* Remove right margin to ensure cursor is positioned correctly */
+  user-select: none;
+  font-weight: bold;
+  line-height: 1;
+  transition: var(--theme-transition);
+  display: inline-block;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  outline: none;
+  flex-grow: 1;
+  caret-color: transparent; /* Hide the native cursor */
+  padding: 0;
+  margin: 0 0 0 5px; /* Add left margin to create space after prompt */
+  height: 20px;
+  transition: var(--theme-transition);
+}
+
+/* Hide the native cursor since we're using a character-based cursor */
+.terminal-input {
+  caret-color: transparent; /* Hide the default cursor */
+  position: relative;
+  border: none;
+  outline: none;
+}
+
+/* No longer needed - using native cursor */
+
+/* Command styling */
+.terminal-command {
+  color: var(--text-color);
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+  border: none;
+  line-height: 22px;
+}
+
+/* Error message styling */
+.terminal-error {
+  color: var(--text-color);
+  padding: 0;
+  margin: 0;
+  line-height: 22px;
+}
+
+/* Success message styling */
+.terminal-success {
+  color: var(--text-color);
+  padding: 0;
+  margin: 0;
+  line-height: 22px;
+}
+
+/* Warning message styling */
+.terminal-warning {
+  color: var(--text-color);
+  padding: 0;
+  margin: 0;
+  line-height: 22px;
+}
+
+/* Support for SVG and image content */
+.terminal-svg-container,
+.terminal-image-container {
+  margin: 15px 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 10px;
+  background-color: var(--svg-bg-color);
+  border: 1px solid var(--border-color);
+  transition: var(--theme-transition);
+}
+
+/* SVG wrapper to control theme colors */
+.svg-theme-wrapper {
+  color: var(--svg-text-color);
+  transition: var(--theme-transition);
+}
+
+/* SVG element styling */
+.svg-theme-wrapper svg {
+  color: inherit;
+  fill: currentColor;
+  stroke: currentColor;
+  transition: var(--theme-transition);
+}
+
+/* SVG child elements */
+.svg-theme-wrapper svg * {
+  color: inherit;
+  fill: currentColor;
+  stroke: currentColor;
+  transition: var(--theme-transition);
+}
+
+/* Project output styling */
+.project-output-container {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.project-title {
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #888;
+}
+
+.project-svg-container {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--bg-color);
+  border-radius: 5px;
+}
+
+.project-description {
+  margin-top: 8px;
+  color: var(--text-color);
+  line-height: 1.5;
+}

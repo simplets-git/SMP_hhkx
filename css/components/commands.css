@@ -1,0 +1,15 @@
+/* Command styling */
+
+.terminal-command {
+  text-decoration: underline;
+  color: var(--text-color);
+  font-weight: normal;
+  background-color: transparent;
+}
+
+/* Ensure commands in help output are properly styled */
+#terminal-output .terminal-command {
+  text-decoration: underline;
+  color: var(--text-color);
+  background-color: transparent;
+}

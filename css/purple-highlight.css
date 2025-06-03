@@ -1,0 +1,41 @@
+/* 
+ * Custom Purple Highlight Styles
+ * This file contains styles to force purple highlighting in the terminal
+ */
+
+/* Define highlight properties once for reuse */
+:root {
+  --highlight-bg: #8A00FF; /* Crazy Intense Purple */
+  --highlight-text: #FFFFFF;
+}
+
+/* Global selection styles */
+::selection {
+  background-color: var(--highlight-bg) !important;
+  color: var(--highlight-text) !important;
+  -webkit-text-fill-color: var(--highlight-text) !important;
+  text-shadow: none !important;
+}
+
+::-moz-selection {
+  background-color: var(--highlight-bg) !important;
+  color: var(--highlight-text) !important;
+  -webkit-text-fill-color: var(--highlight-text) !important;
+  text-shadow: none !important;
+}
+
+/* Terminal-specific selection - using a more efficient selector pattern */
+/* This targets all elements within the terminal container */
+#terminal *::selection {
+  background-color: var(--highlight-bg) !important;
+  color: var(--highlight-text) !important;
+  -webkit-text-fill-color: var(--highlight-text) !important;
+  text-shadow: none !important;
+}
+
+#terminal *::-moz-selection {
+  background-color: var(--highlight-bg) !important;
+  color: var(--highlight-text) !important;
+  -webkit-text-fill-color: var(--highlight-text) !important;
+  text-shadow: none !important;
+}
