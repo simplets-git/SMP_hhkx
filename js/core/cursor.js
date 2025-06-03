@@ -178,42 +178,15 @@ class CursorManager {
     
     // Handle input changes
     this.inputElement.addEventListener('input', (event) => {
-      // The input event will have already changed the value
-      // We need to capture the new value without the cursor
-      if (this.isVisible) {
-        // Get the current value and remove ALL cursor characters that might be there
-        const value = this.inputElement.value;
-        let cleanedValue = value;
-        let cursorIndex = -1;
-        
-        // Find the first cursor character
-        cursorIndex = cleanedValue.indexOf(this.cursorChar);
-        
-        // Remove all cursor characters
-        while (cursorIndex !== -1) {
-          cleanedValue = cleanedValue.substring(0, cursorIndex) + cleanedValue.substring(cursorIndex + 1);
-          cursorIndex = cleanedValue.indexOf(this.cursorChar);
-        }
-        
-        // Store the cleaned value
-        this.originalValue = cleanedValue;
-        
-        // Get the current selection position
-        this.cursorPosition = this.inputElement.selectionStart;
-        if (this.cursorPosition > 0 && value.charAt(this.cursorPosition - 1) === this.cursorChar) {
-          // Adjust for cursor character
-          this.cursorPosition--;
-        }
-        
-        // Restore the cleaned text
-        const currentPos = this.cursorPosition;
-        this.inputElement.value = this.originalValue;
-        this.inputElement.selectionStart = currentPos;
-        this.inputElement.selectionEnd = currentPos;
-        
-        // Re-add the cursor at the current position
-        setTimeout(() => this.updateCursor(), 0);
-      }
+      // Due to the 'keydown' listener calling restoreOriginalText(),
+      // this.inputElement.value should now be the "true" text after browser's input processing.
+      this.originalValue = this.inputElement.value;
+      this.cursorPosition = this.inputElement.selectionStart;
+
+      // updateCursor() will handle re-inserting the visual cursor if this.isVisible is true.
+      // It internally calls restoreOriginalText() first (which is fine, it will use the new originalValue)
+      // and then adds the cursorChar.
+      this.updateCursor();
     });
     
     // Handle key events
@@ -230,11 +203,17 @@ class CursorManager {
     
     // Handle click events
     this.inputElement.addEventListener('click', () => {
-      // Restore original text first
+      // The click moves the browser's caret. Our input field might still visually contain our old cursor character.
+      // First, restoreOriginalText() to remove our visual artifact based on the *old* state.
       this.restoreOriginalText();
-      
-      // Then update with the new cursor position
+
+      // Use setTimeout to ensure the browser has updated the selection state after the click.
       setTimeout(() => {
+        // Now the field is clean. Read the new cursor position set by the click.
+        this.originalValue = this.inputElement.value; // Value is already clean from restoreOriginalText
+        this.cursorPosition = this.inputElement.selectionStart; // Get the new position
+        
+        // Redraw the visual cursor at the new position.
         this.updateCursor();
       }, 0);
     });
