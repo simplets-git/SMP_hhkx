@@ -12,9 +12,7 @@
   --heading-color: #ffffff;
   --emphasis-color: #eeeeee;
   
-  /* Selection Colors */
-  --selection-bg-color: #8A00FF; /* Purple */
-  --selection-text-color: #FFFFFF;
+  /* Selection Colors (defined in custom-terminal.css) */
   
   /* Links */
   --link-color: #2196f3;
@@ -82,9 +80,9 @@ body.light-theme {
   --heading-color: #121212;
   --emphasis-color: #202020;
   
-  /* Selection Colors */
-  --selection-bg-color: #8A00FF; /* Purple */
-  --selection-text-color: #FFFFFF;
+  /* Selection Colors (now controlled by custom-terminal.css for light theme) */
+  /* --selection-bg-color: #8A00FF; */ /* Purple */
+  /* --selection-text-color: #FFFFFF; */
   
   /* Links */
   --link-color: #1565c0;
