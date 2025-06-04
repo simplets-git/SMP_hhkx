@@ -122,9 +122,9 @@ html, body {
   height: calc(100% - 60px);
   margin-left: calc(var(--left-animation-width, 300px) + 50px);
   margin-right: 250px;
-  margin-top: 20px;
+  margin-top: 0px;
   overflow: auto;
-  padding: 20px;
+  padding: 0px 20px 20px 20px;
   box-sizing: border-box;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -260,38 +260,23 @@ html, body {
 
 /* Command styling */
 .terminal-command {
-  /* General styling, color and background will be theme-specific */
   font-weight: bold;
   padding: 0;
   margin: 0;
   border: none;
-  line-height: 22px;
+  line-height: var(--terminal-base-row-height);
   display: inline; /* Will be overridden to block by .terminal-output > * but good to keep for other potential uses */
   white-space: pre-wrap;
 }
 
-/* Error message styling */
-.terminal-error {
-  color: var(--text-color);
-  padding: 0;
-  margin: 0;
-  line-height: 22px;
-}
-
-/* Success message styling */
-.terminal-success {
-  color: var(--text-color);
-  padding: 0;
-  margin: 0;
-  line-height: 22px;
-}
-
-/* Warning message styling */
+/* Error, Success, and Warning message styling */
+.terminal-error,
+.terminal-success,
 .terminal-warning {
   color: var(--text-color);
   padding: 0;
   margin: 0;
-  line-height: 22px;
+  line-height: var(--terminal-base-row-height);
 }
 
 /* Support for SVG and image content */
