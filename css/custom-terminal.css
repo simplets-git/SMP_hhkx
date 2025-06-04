@@ -1,3 +1,80 @@
+:root {
+  /* Default Theme (Dark) */
+  --bg-color: #000000; /* Pure black background */
+  --text-color: #FFFFFF; /* Pure white text */
+  --primary-color: #569cd6; /* Blue for links, prompts */
+  --secondary-color: #4ec9b0; /* Teal for highlights */
+  --error-color: #f44747; /* Red for errors */
+  --success-color: #73c991; /* Green for success */
+  --warning-color: #cca700; /* Yellow for warnings */
+  --border-color: #111111; /* Very dark gray for subtle borders */
+  --selection-bg-color: #569cd6;
+  --selection-text-color: #FFFFFF;
+  --link-color: #569cd6;
+  --link-hover-color: #7dbaff;
+  --button-bg-color: #111111; /* Very dark gray buttons */
+  --button-text-color: #FFFFFF;
+  --input-bg-color: #000000; /* Pure black input background */
+  --input-border-color: #111111; /* Very dark gray input border */
+  --svg-bg-color: #000000; /* Pure black SVG background */
+  --svg-text-color: #FFFFFF; /* Pure white SVG text */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease;
+  --terminal-base-row-height: 25px; /* Base height for terminal rows */
+}
+
+body.dark-theme {
+  --bg-color: #000000; /* Pure black background */
+  --text-color: #FFFFFF; /* Pure white text */
+  --primary-color: #569cd6; /* Blue for links, prompts */
+  --secondary-color: #4ec9b0; /* Teal for highlights */
+  --error-color: #f44747; /* Red for errors */
+  --success-color: #73c991; /* Green for success */
+  --warning-color: #cca700; /* Yellow for warnings */
+  --border-color: #111111; /* Very dark gray for subtle borders */
+  --selection-bg-color: #569cd6;
+  --selection-text-color: #FFFFFF;
+  --link-color: #569cd6;
+  --link-hover-color: #7dbaff;
+  --button-bg-color: #111111; /* Very dark gray buttons */
+  --button-text-color: #FFFFFF;
+  --input-bg-color: #000000; /* Pure black input background */
+  --input-border-color: #111111; /* Very dark gray input border */
+  --svg-bg-color: #000000; /* Pure black SVG background */
+  --svg-text-color: #FFFFFF; /* Pure white SVG text */
+}
+
+body.light-theme {
+  --bg-color: #ffffff; /* White background */
+  --text-color: #222222; /* Dark gray/black text */
+  --primary-color: #007acc; /* Blue */
+  --secondary-color: #1e88e5; /* Lighter blue */
+  --error-color: #d32f2f;   /* Red */
+  --success-color: #388e3c; /* Green */
+  --warning-color: #fbc02d; /* Yellow */
+  --border-color: #cccccc;
+  --selection-bg-color: #007acc;
+  --selection-text-color: #ffffff;
+  --link-color: #007acc;
+  --link-hover-color: #005f9e;
+  --button-bg-color: #e0e0e0;
+  --button-text-color: #222222;
+  --input-bg-color: #f5f5f5;
+  --input-border-color: #cccccc;
+  --svg-bg-color: #f5f5f5;
+  --svg-text-color: #222222;
+}
+
+/* Theme-specific styling for logged commands */
+body.dark-theme .terminal-command {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+body.light-theme .terminal-command {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
 html, body {
   background-color: var(--bg-color) !important; /* Use theme variable */
   color: var(--text-color); /* Use theme variable */
@@ -59,7 +136,8 @@ html, body {
   z-index: 10;
   max-width: 950px;
   font-family: 'Share Tech Mono', monospace;
-  line-height: 1.3;
+  font-size: 18px; /* Base font size for terminal */
+  line-height: 25px; /* Base line height for terminal */
   letter-spacing: 0.4px;
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -73,10 +151,7 @@ html, body {
 .terminal-output {
   padding: 0 5px;
   margin: 0;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 16px;
-  line-height: 22px;
-  color: var(--text-color);
+  /* font-family, font-size, line-height, color inherited from #terminal */
   background-color: var(--bg-color);
   flex-grow: 1;
   overflow-y: auto;
@@ -87,168 +162,52 @@ html, body {
   display: block;
 }
 
-/* Welcome message styling */
-.welcome-message {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
-}
-
 /* Spacer after welcome message */
 .welcome-spacer {
   display: block;
-  min-height: 22px;
+  min-height: 25px;
   margin: 0;
   padding: 0;
   content: '';
 }
 
-/* Command container styling */
-.command-container {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
-}
-
-.command-container .terminal-command {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
-  white-space: pre-wrap;
-}
-
 /* Command output styling */
 .command-output {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
-  white-space: pre-wrap;
+  white-space: normal;
+  user-select: text;
 }
 
 /* Error, success, and warning messages */
 .terminal-error,
 .terminal-success,
 .terminal-warning {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
   white-space: pre-wrap;
 }
 
-/* Input line */
-.terminal-input-line {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: flex;
-  align-items: center;
-  position: sticky;
-  bottom: 0;
-  background-color: var(--bg-color);
-  z-index: 10;
-  border: none !important;
-  outline: none !important;
-}
-
-.terminal-prompt {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: inline-block;
-  flex-shrink: 0;
-}
 
 .prompt-line {
   display: flex;
   align-items: center;
-  margin: 0;
-  min-height: 22px;
-  line-height: 22px;
+  min-height: 25px;
+  /* line-height, font-family, font-size, color inherited from #terminal or parent */
   white-space: pre-wrap;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 16px;
-  color: var(--text-color);
-  width: 100%;
   position: relative; /* Essential for cursor positioning */
-  border: none !important;
-  outline: none !important;
+  border: none;
+  outline: none;
 }
 
-.terminal-input {
-  margin: 0 0 0 5px;
-  padding: 0;
-  line-height: 22px;
-  height: 22px;
-  min-height: 22px;
-  border: none;
-  background: transparent;
-  color: var(--text-color);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 16px;
-  outline: none;
-  flex-grow: 1;
-  vertical-align: top;
-}
+/* .terminal-input rule block removed for consolidation below */
 
 /* Ensure proper wrapping for long content */
 .terminal-output > * {
   margin: 0;
   padding: 0;
-  line-height: 22px;
-  min-height: 22px;
+  line-height: 25px;
+  min-height: 25px;
   display: block;
 }
 
-/* Remove any default browser styles */
-.terminal-output div,
-.terminal-output p,
-.terminal-output span {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
-  min-height: 22px;
-  display: block;
-}
-
-/* Terminal inner class */
-.terminal-inner {
-  background-color: transparent;
-  color: var(--text-color);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  line-height: 1.4;
-  letter-spacing: var(--letter-spacing);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  transition: var(--theme-transition);
-}
-
-/* Ensure all terminal elements have the same transition */
-.terminal-inner *,
-.terminal-output *,
-.terminal-input-line *,
-.cmd,
-.cmd-prompt,
-.cmd span,
-.terminal-output div,
-.terminal-output span,
-.terminal-prompt,
-.terminal-input {
-  transition: var(--theme-transition);
-}
+/* Empty rule block removed */
 
 /* Input line container */
 .terminal-input-line {
@@ -259,56 +218,59 @@ html, body {
   background-color: var(--bg-color);
   min-height: var(--terminal-base-row-height);
   line-height: 1;
-  transition: var(--theme-transition);
+  /* transition: var(--theme-transition); REMOVED */
   position: relative; /* Ensure it's a positioning context for absolute elements */
 }
 
 .terminal-prompt {
   color: var(--text-color);
-  margin-right: 0; /* Remove right margin to ensure cursor is positioned correctly */
-  user-select: none;
+  margin-right: 0;
+  user-select: text;
+  font-family: 'Share Tech Mono', monospace; /* Ensure correct font family */
+  font-size: 18px; /* Ensure correct font size */
   font-weight: bold;
   line-height: 1;
-  transition: var(--theme-transition);
-  display: inline-block;
-  white-space: nowrap; /* Prevent wrapping */
+  /* transition: var(--theme-transition); REMOVED */
+  display: inline;
+  white-space: pre;
 }
 
 .terminal-input {
   background: transparent;
   border: none;
-  color: var(--text-color);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 16px;
-  line-height: 1;
+  color: var(--text-color); /* Explicit color */
+  font-family: 'Share Tech Mono', monospace; /* Explicit font */
+  font-size: 18px; /* Explicit font size */
+  line-height: 1; /* Specific line height for input control */
   letter-spacing: 0.4px;
   outline: none;
   flex-grow: 1;
   caret-color: transparent; /* Hide the native cursor */
   padding: 0;
   margin: 0 0 0 5px; /* Add left margin to create space after prompt */
-  height: 20px;
-  transition: var(--theme-transition);
-}
-
-/* Hide the native cursor since we're using a character-based cursor */
-.terminal-input {
-  caret-color: transparent; /* Hide the default cursor */
-  position: relative;
-  border: none;
-  outline: none;
+  height: 25px; /* Explicit height */
+  min-height: 25px; /* Ensure min-height matches height */
+  vertical-align: top; /* From first rule block */
+  position: relative; /* From the second rule block */
 }
 
 /* No longer needed - using native cursor */
 
+/* User input styling for selectable command lines */
+.terminal-user-input {
+  user-select: text;
+}
+
 /* Command styling */
 .terminal-command {
-  color: var(--text-color);
+  /* General styling, color and background will be theme-specific */
   font-weight: bold;
   padding: 0;
   margin: 0;
   border: none;
   line-height: 22px;
+  display: inline; /* Will be overridden to block by .terminal-output > * but good to keep for other potential uses */
+  white-space: pre-wrap;
 }
 
 /* Error message styling */

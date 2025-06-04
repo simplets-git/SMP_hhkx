@@ -40,6 +40,7 @@ class CursorManager {
       this.inputElement.value = this.inputElement.value.replace(new RegExp(this.cursorChar, 'g'), '');
     }
     this.originalValue = this.inputElement.value;
+    console.log('[CursorManager] Initializing. inputElement.value received:', `"${this.inputElement.value}"`, 'Setting originalValue to:', `"${this.originalValue}"`);
     
     // Set up event listeners
     this.setupEventListeners();

@@ -214,6 +214,23 @@ class TerminalController {
       terminalView.displayError(`Error processing command: ${error.message}`);
     } finally {
       this.isProcessingCommand = false;
+      // Only create a new input line if one does not exist (prevents duplicate prompts)
+      if (terminalView) {
+        try {
+          const existingInput = terminalView.terminalElement && terminalView.terminalElement.querySelector('.terminal-input-line');
+          console.log('[DEBUG] Checking for existing input line:', !!existingInput, existingInput);
+          if (!existingInput) {
+            console.log('[DEBUG] No input line found, creating new input line.');
+            terminalView.createInputLine();
+          } else {
+            console.log('[DEBUG] Input line already exists, not creating a new one.');
+          }
+        } catch (e) {
+          console.error('[DEBUG] Exception during input line check/creation:', e);
+        }
+      } else {
+        console.error('[TerminalController] ERROR: terminalView is undefined or null, cannot create new input line.');
+      }
     }
   }
 

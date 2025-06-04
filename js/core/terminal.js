@@ -109,10 +109,10 @@ class Terminal {
     
     // Listen for theme changes
     eventBus.on('theme:changed', () => {
-      // Update cursor color if needed
-      if (this.view.cursorManager) {
-        this.view.cursorManager.updateCursorColor();
-      }
+      // Cursor color is now handled by CSS text color. No manual update needed.
+      // if (this.view.cursorManager) {
+      //   this.view.cursorManager.updateCursorColor(); // This method no longer exists
+      // }
     });
     
     // Handle command execution events from UI buttons
@@ -127,10 +127,10 @@ class Terminal {
    * Handle terminal resize
    */
   handleResize() {
-    // Update cursor position if needed
-    if (this.view.cursorManager) {
-      this.view.cursorManager.updateCursorPosition();
-    }
+    // Cursor position is now handled by text flow. No manual update needed on resize.
+    // if (this.view.cursorManager) {
+    //   this.view.cursorManager.updateCursorPosition(); // This method no longer exists
+    // }
   }
 
   /**

@@ -94,18 +94,28 @@ class TerminalView {
 
   /**
    * Create the input line with prompt and input field
+   * Only one input line should exist at a time.
    */
   createInputLine() {
+    // Remove any existing input line (to avoid multiple active prompts)
+    const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
+    if (oldInputLine) {
+      try {
+        console.log('[DEBUG] Removing old input line:', oldInputLine);
+      } catch (e) {}
+      oldInputLine.remove();
+    }
     // Create input line
+    try {
+      console.log('[DEBUG] Creating new input line');
+    } catch (e) {}
     const inputLine = document.createElement('div');
     inputLine.className = 'terminal-input-line';
-    
     // Create prompt
     this.promptElement = document.createElement('span');
     this.promptElement.className = 'terminal-prompt';
     this.promptElement.textContent = terminalCore.getPrompt();
     inputLine.appendChild(this.promptElement);
-    
     // Create input field
     this.inputElement = document.createElement('input');
     this.inputElement.className = 'terminal-input';
@@ -113,28 +123,17 @@ class TerminalView {
     this.inputElement.autocomplete = 'off';
     this.inputElement.spellcheck = false;
     inputLine.appendChild(this.inputElement);
-
+    // Clear the input field's value before initializing the cursor for the new line
+    this.inputElement.value = '';
     // Initialize the CursorManager with the custom underscore cursor
     this.cursorManager = new CursorManager();
     this.cursorManager.initialize(inputLine, this.inputElement);
-    
     this.terminalElement.appendChild(inputLine);
-    
     // Emit an event to notify that the input element is ready
-    console.log('[TerminalView] Input element created, emitting INPUT_ELEMENT_READY event');
     try {
-      // Emit a custom event with the input element
       eventBus.emit('terminal:input:element:ready', this.inputElement);
-      console.log('[TerminalView] INPUT_ELEMENT_READY event emitted successfully');
     } catch (error) {
       console.error('[TerminalView] ERROR: Failed to emit INPUT_ELEMENT_READY event:', error);
-    }
-    
-    // Force an immediate cursor position update
-    if (this.cursorManager) {
-      setTimeout(() => {
-        this.cursorManager.updateCursorPosition();
-      }, 0);
     }
   }
 
@@ -235,25 +234,35 @@ class TerminalView {
   }
 
   /**
-   * Display command in the terminal
+   * Display command in the terminal as selectable text (prompt + user input)
    * @param {string} command - Command to display
    */
   displayCommand(command) {
-    // Create a container for the command
-    const commandContainer = document.createElement('div');
-    commandContainer.className = 'command-container';
-    
-    // Add the command to the container
-    const commandElement = document.createElement('div');
-    commandElement.className = 'terminal-command';
-    commandElement.textContent = `${terminalCore.getPrompt()}${command}`;
-    commandContainer.appendChild(commandElement);
-    
-    // Add the container to the output
-    this.outputElement.appendChild(commandContainer);
-    
-    // Return the container for adding output
-    return commandContainer;
+    try {
+      console.log('[DEBUG] displayCommand called with:', command);
+    } catch (e) {}
+
+    // Remove the input line before rendering the output line
+    try {
+      const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
+      if (oldInputLine) {
+        console.log('[DEBUG] Removing input line before rendering output:', oldInputLine);
+        oldInputLine.remove();
+      }
+    } catch (e) {
+      console.error('[DEBUG] Error removing input line:', e);
+    }
+
+    // Create a container for the command line
+    const lineContainer = document.createElement('div');
+    lineContainer.className = 'command-output';
+    // Create a single span for the combined prompt and command
+    const loggedCommandSpan = document.createElement('span');
+    loggedCommandSpan.className = 'terminal-command terminal-user-input'; // Apply styles for inline display, pre-wrap, and selectability
+    loggedCommandSpan.textContent = terminalCore.getPrompt() + command; // Combine prompt and command
+    lineContainer.appendChild(loggedCommandSpan);
+    this.outputElement.appendChild(lineContainer);
+    return lineContainer;
   }
 
   /**

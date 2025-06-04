@@ -18,16 +18,20 @@
     <!-- Welcome message styling (removed) -->
     <!-- Custom purple highlight styling -->
     <link rel="stylesheet" href="css/purple-highlight.css">
-    <!-- Terminal font styling -->
+    <!-- Global styles for text selection and user interaction -->
     <style>
-        .terminal, .cmd, .terminal-output, .terminal-output div, .terminal-output span, .cmd span,
-        .terminal-prompt, .terminal-input { /* Added .terminal-prompt and .terminal-input */
-            font-size: 18px !important;
-            font-family: 'Share Tech Mono', monospace !important;
-            line-height: 22px !important;
-            letter-spacing: 0.4px !important;
-            background-color: transparent !important; /* Ensure no white background */
-        }
+      .terminal, 
+      .terminal-output, .terminal-output div, .terminal-output span, 
+      .terminal-prompt, .terminal-input, .terminal-user-input, 
+      .terminal-command /* General logged command text */
+      {
+        -webkit-touch-callout: text; /* iOS Safari */
+        -webkit-user-select: text;   /* Safari */
+        -khtml-user-select: text;    /* Konqueror HTML */
+        -moz-user-select: text;      /* Firefox */
+        -ms-user-select: text;       /* Internet Explorer/Edge */
+        user-select: text;           /* Non-prefixed version */
+      }
     </style>
 </head>
 <body class="dark-theme loading">
