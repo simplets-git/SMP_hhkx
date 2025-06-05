@@ -159,7 +159,7 @@ class TerminalController {
       
       // Handle built-in commands
       console.log('[TerminalController] Checking if command is built-in:', commandName);
-      if (this.handleBuiltInCommand(commandName, args)) {
+      if (await this.handleBuiltInCommand(commandName, args)) {
         console.log('[TerminalController] Command was handled as built-in command');
         this.isProcessingCommand = false;
         return;
@@ -183,7 +183,7 @@ class TerminalController {
           this.isProcessingCommand = false;
           return;
         }
-        terminalView.displayError(`Unknown command: ${commandName}`);
+        await terminalView.displayError(`Unknown command: ${commandName}`);
         this.isProcessingCommand = false;
         return;
       }
@@ -203,15 +203,15 @@ class TerminalController {
             this.isProcessingCommand = false;
             return;
           }
-          terminalView.displayOutput(result);
+          await terminalView.displayOutput(result);
         }
       } catch (error) {
         console.error(`Error executing command ${commandName}:`, error);
-        terminalView.displayError(`Error executing command ${commandName}: ${error.message}`);
+        await terminalView.displayError(`Error executing command ${commandName}: ${error.message}`);
       }
     } catch (error) {
       console.error('Error processing command:', error);
-      terminalView.displayError(`Error processing command: ${error.message}`);
+      await terminalView.displayError(`Error processing command: ${error.message}`);
     } finally {
       this.isProcessingCommand = false;
       // Only create a new input line if one does not exist (prevents duplicate prompts)
@@ -290,7 +290,7 @@ class TerminalController {
    * @param {string[]} args - Command arguments
    * @returns {boolean} True if the command was handled
    */
-  handleBuiltInCommand(commandName, args) {
+  async handleBuiltInCommand(commandName, args) {
     switch (commandName.toLowerCase()) {
       case 'clear':
         eventBus.emit(TERMINAL_EVENTS.CLEAR);
@@ -298,13 +298,13 @@ class TerminalController {
         
       case 'version':
         const versionInfo = this.getVersionInfo();
-        terminalView.displayOutput(versionInfo);
+        await terminalView.displayOutput(versionInfo);
         return true;
         
       // Help command is now handled by the command registry
       // case 'help':
       //   const helpText = this.getHelpText(args[0]);
-      //   terminalView.displayOutput(helpText);
+      //   await terminalView.displayOutput(helpText); // If re-enabled, ensure await
       //   return true;
         
       default:

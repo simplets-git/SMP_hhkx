@@ -39,8 +39,8 @@ html.dark-theme {
   --button-text-color: #FFFFFF;
   --input-bg-color: #000000; /* Pure black input background */
   --input-border-color: #111111; /* Very dark gray input border */
-  --svg-bg-color: #000000; /* Pure black SVG background */
-  --svg-text-color: #FFFFFF; /* Pure white SVG text */
+  --svg-bg-color: #FFFFFF; /* White SVG background for dark theme circles */
+  --svg-text-color: #000000; /* Black SVG text for dark theme circles */
 }
 
 /* Apply theme-aware selection colors */
@@ -70,8 +70,8 @@ html.light-theme {
   --button-text-color: #222222;
   --input-bg-color: #f5f5f5;
   --input-border-color: #cccccc;
-  --svg-bg-color: #ffffff;
-  --svg-text-color: #222222;
+  --svg-bg-color: #000000; /* Black SVG background for light theme circles */
+  --svg-text-color: #FFFFFF; /* White SVG text for light theme circles */
 }
 
 /* Theme-specific styling for logged commands */

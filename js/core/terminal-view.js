@@ -22,7 +22,93 @@ class TerminalView {
     
     // State
     this.initialized = false;
+
+    // Animation delays
+    this.CHARACTER_ANIMATION_DELAY_MS = 0;    // Set to 0 for instant line reveal
+    this.LINE_ANIMATION_BASE_DELAY_MS = 60; // Base pause between lines (e.g., 60ms)
+    this.LINE_ANIMATION_VARIATION_MS = 30;  // Variation for line delay (e.g., +/- 30ms, so 30-90ms)
+    this.MINIMUM_LINE_DELAY_MS = 20;        // Minimum delay to ensure it's not too fast
   }
+
+  // --- Helper methods for output ---
+
+  _addStaticOutputLine(content, className = '') {
+    const lineContainer = document.createElement('div');
+    if (className) {
+      lineContainer.className = className;
+    }
+
+    if (typeof content === 'string') {
+      const linesArray = content.split('\n');
+      linesArray.forEach((textLine, index) => {
+        if (index > 0) {
+          lineContainer.appendChild(document.createElement('br'));
+        }
+        lineContainer.appendChild(document.createTextNode(textLine));
+      });
+    } else if (content instanceof HTMLElement) {
+      lineContainer.appendChild(content);
+    } else {
+      lineContainer.appendChild(document.createTextNode(String(content)));
+    }
+
+    this.outputElement.appendChild(lineContainer);
+    this.scrollToBottom();
+    return lineContainer;
+  }
+
+  async _animateTextOutput(text, baseClassName = '', targetContainer = null) {
+    const effectiveCharDelay = this.CHARACTER_ANIMATION_DELAY_MS;
+    const outputTarget = this.outputElement; // Always append new lines to the main output element
+
+    if (!outputTarget) {
+      console.error("TerminalView: this.outputElement is not available in _animateTextOutput.");
+      return;
+    }
+
+    const lines = String(text).split('\n');
+    let currentLineElement = targetContainer; // Use targetContainer for the first line if provided
+
+    for (let i = 0; i < lines.length; i++) {
+      const lineText = lines[i];
+
+      if (!currentLineElement || i > 0) { // Create new div for subsequent lines or if no initial target
+        currentLineElement = document.createElement('div');
+        if (baseClassName) {
+          currentLineElement.className = baseClassName;
+        }
+        outputTarget.appendChild(currentLineElement);
+      }
+      
+      if (lineText.length === 0) {
+        currentLineElement.innerHTML = '&nbsp;'; // Ensure empty lines take up space
+        this.scrollToBottom();
+      } else {
+        if (currentLineElement.innerHTML === '&nbsp;') { // Clear placeholder if we start typing
+            currentLineElement.innerHTML = '';
+        }
+        if (effectiveCharDelay > 0) {
+          for (let j = 0; j < lineText.length; j++) {
+            await new Promise(resolve => setTimeout(resolve, effectiveCharDelay));
+            currentLineElement.textContent += lineText[j];
+            this.scrollToBottom(); // Scroll as text is added
+          }
+        } else {
+          // If char delay is 0, set the whole line content at once
+          currentLineElement.textContent = lineText;
+          this.scrollToBottom(); // Scroll after line is added
+        }
+      }
+
+      if (i < lines.length - 1) {
+      const randomVariation = (Math.random() * 2 * this.LINE_ANIMATION_VARIATION_MS) - this.LINE_ANIMATION_VARIATION_MS;
+      let currentLineDelay = this.LINE_ANIMATION_BASE_DELAY_MS + randomVariation;
+      currentLineDelay = Math.max(this.MINIMUM_LINE_DELAY_MS, currentLineDelay); // Ensure minimum delay
+      await new Promise(resolve => setTimeout(resolve, currentLineDelay));
+      }
+    }
+  }
+  // --- End Helper methods ---
 
   /**
    * Initialize the terminal view
@@ -100,15 +186,9 @@ class TerminalView {
     // Remove any existing input line (to avoid multiple active prompts)
     const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
     if (oldInputLine) {
-      try {
-        console.log('[DEBUG] Removing old input line:', oldInputLine);
-      } catch (e) {}
       oldInputLine.remove();
     }
     // Create input line
-    try {
-      console.log('[DEBUG] Creating new input line');
-    } catch (e) {}
     const inputLine = document.createElement('div');
     inputLine.className = 'terminal-input-line';
     // Create prompt
@@ -130,11 +210,7 @@ class TerminalView {
     this.cursorManager.initialize(inputLine, this.inputElement);
     this.terminalElement.appendChild(inputLine);
     // Emit an event to notify that the input element is ready
-    try {
-      eventBus.emit('terminal:input:element:ready', this.inputElement);
-    } catch (error) {
-      console.error('[TerminalView] ERROR: Failed to emit INPUT_ELEMENT_READY event:', error);
-    }
+    eventBus.emit('terminal:input:element:ready', this.inputElement);
   }
 
   /**
@@ -232,18 +308,31 @@ class TerminalView {
   showGreeting(greeting) {
     if (!greeting) return;
     
+    // Create container, but animation will fill it.
     const greetingContainer = document.createElement('div');
     greetingContainer.className = 'welcome-message';
-    greetingContainer.textContent = greeting;
     this.outputElement.appendChild(greetingContainer);
-    
-    // Add a spacer after the welcome message
-    const spacer = document.createElement('div');
-    spacer.className = 'welcome-spacer';
-    this.outputElement.appendChild(spacer);
-    
-    // Force a reflow to ensure the spacer is rendered before the prompt
-    this.outputElement.offsetHeight;
+
+    this._animateTextOutput(greeting, '', greetingContainer) // Animate into the pre-added container
+      .then(() => {
+        // Add a spacer after the welcome message animation is done
+        const spacer = document.createElement('div');
+        spacer.className = 'welcome-spacer';
+        this.outputElement.appendChild(spacer);
+        
+        this.outputElement.offsetHeight; // Force a reflow
+        this.scrollToBottom();
+      })
+      .catch(error => {
+        console.error("Error animating greeting: ", error);
+        // Fallback to instant display if animation fails
+        greetingContainer.textContent = greeting; // Set text directly
+        const spacer = document.createElement('div');
+        spacer.className = 'welcome-spacer';
+        this.outputElement.appendChild(spacer);
+        this.outputElement.offsetHeight;
+        this.scrollToBottom();
+      });
   }
 
   /**
@@ -251,120 +340,83 @@ class TerminalView {
    * @param {string} command - Command to display
    */
   displayCommand(command) {
-    try {
-      console.log('[DEBUG] displayCommand called with:', command);
-    } catch (e) {}
-
-    // Remove the input line before rendering the output line
-    try {
-      const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
-      if (oldInputLine) {
-        console.log('[DEBUG] Removing input line before rendering output:', oldInputLine);
-        oldInputLine.remove();
-      }
-    } catch (e) {
-      console.error('[DEBUG] Error removing input line:', e);
+    const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
+    if (oldInputLine) {
+      oldInputLine.remove();
     }
 
-    // Create a container for the command line
-    const lineContainer = document.createElement('div');
-    lineContainer.className = 'command-output historical-prompt-line'; // Added historical-prompt-line
-    // Create a single span for the combined prompt and command
+    const fullCommandText = terminalCore.getPrompt() + command;
     const loggedCommandSpan = document.createElement('span');
-    loggedCommandSpan.className = 'terminal-command terminal-user-input'; // Apply styles for inline display, pre-wrap, and selectability
-    loggedCommandSpan.textContent = terminalCore.getPrompt() + command; // Combine prompt and command
-    lineContainer.appendChild(loggedCommandSpan);
-    this.outputElement.appendChild(lineContainer);
-    return lineContainer;
+    loggedCommandSpan.className = 'terminal-command terminal-user-input';
+    loggedCommandSpan.textContent = fullCommandText;
+    
+    // Use _addStaticOutputLine for instant display of the command echo.
+    // The class 'command-output historical-prompt-line' applies to the line container.
+    return this._addStaticOutputLine(loggedCommandSpan, 'command-output historical-prompt-line');
   }
 
   /**
    * Display output in the terminal
    * @param {*} output - Output to display
-   * @param {HTMLElement} container - Optional container to append to
+   * @param {HTMLElement} container - Optional: A specific container to append to (mostly deprecated by animation logic)
    */
-  displayOutput(output, container = null) {
+  async displayOutput(output, container = null) { // Method becomes async
     if (!output) return;
     
-    const outputContainer = container || this.outputElement;
-    
-    const addOutput = (content, className = '') => {
-      const lineContainer = document.createElement('div');
-      lineContainer.className = 'command-output' + (className ? ' ' + className : '');
-
-      if (typeof content === 'string') {
-        const lines = content.split('\n');
-        lines.forEach((textLine, index) => {
-          if (index > 0) {
-            lineContainer.appendChild(document.createElement('br'));
-          }
-          lineContainer.appendChild(document.createTextNode(textLine));
-        });
-      } else if (content instanceof HTMLElement) {
-        lineContainer.appendChild(content);
-      } else if (content && typeof content === 'object' && content.html && typeof content.html === 'string') {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = content.html;
-        while (tempDiv.firstChild) {
-          lineContainer.appendChild(tempDiv.firstChild);
-        }
-      } else { // Fallback for other types
-        lineContainer.appendChild(document.createTextNode(String(content)));
-      }
-
-      if (this.outputElement) {
-        this.outputElement.appendChild(lineContainer);
-      } else {
-        console.error("TerminalView: this.outputElement is not available in addOutput.");
-      }
-      
-      this.scrollToBottom();
-      return lineContainer;
-    };
+    // The 'container' argument is largely unused now as helpers manage their own line containers
+    // within this.outputElement. If it were to be used, _animateTextOutput would need modification.
 
     try {
-      // Handle different result types
       if (Array.isArray(output)) {
-        // Handle array of results
-        output.forEach(item => {
+        let stringBuffer = [];
+        for (const item of output) {
           if (typeof item === 'string') {
-            addOutput(item);
+            stringBuffer.push(item);
           } else if (item && typeof item === 'object') {
-            this.handleResultObject(item, addOutput);
+            // If there are buffered strings, animate them first
+            if (stringBuffer.length > 0) {
+              const combinedString = stringBuffer.join('\n');
+              await this._animateTextOutput(combinedString, 'command-output');
+              stringBuffer = []; // Clear the buffer
+            }
+            // Now handle the object
+            await this.handleResultObject(item);
           }
-        });
+        }
+        // After the loop, if there are any remaining strings in the buffer, animate them
+        if (stringBuffer.length > 0) {
+          const combinedString = stringBuffer.join('\n');
+          await this._animateTextOutput(combinedString, 'command-output');
+        }
       } else if (typeof output === 'string') {
-        addOutput(output);
+        await this._animateTextOutput(output, 'command-output');
       } else if (output && typeof output === 'object') {
-        this.handleResultObject(output, addOutput);
+        await this.handleResultObject(output);
       }
       
-      // Ensure the prompt is visible after adding output
-      this.ensurePromptVisible();
+      this.ensurePromptVisible(); // Ensure prompt is visible after all output is processed
     } catch (error) {
       console.error('Error displaying output:', error);
-      addOutput(`Error displaying output: ${error.message}`, 'terminal-error');
+      await this._animateTextOutput(`Error displaying output: ${error.message}`, 'terminal-error');
+      this.ensurePromptVisible(); // Also ensure prompt is visible after error output
     }
   }
 
   /**
    * Handle a result object in the display
    * @param {Object} item - The result object to handle
-   * @param {Function} addOutput - Function to add output to the terminal
    */
-  handleResultObject(item, addOutput) {
+  async handleResultObject(item) { // Method becomes async, addOutput param removed
     if (item.error) {
-      addOutput(item.error, 'terminal-error');
-    } else if (item.text || item.message) {
-      addOutput(item.text || item.message, item.className || '');
-    } else if (item.type === 'html' || item.type === 'html_block' || item.html) {
-      // Create a container for HTML content
-      const container = document.createElement('div');
-      container.className = item.className || '';
-      container.innerHTML = item.html || item.message || item.content || '';
+      await this._animateTextOutput(item.error, 'terminal-error');
+    } else if (item.type === 'html' || item.type === 'html_block' || item.html || item.className === 'raw-html-output') {
+      // Handle complex HTML content statically
+      const htmlContentContainer = document.createElement('div');
+      htmlContentContainer.className = item.className || ''; // Use provided class or default
+      htmlContentContainer.innerHTML = item.html || item.message || item.content || ''; // Prefer .html or .content
       
-      // Execute any scripts in the HTML
-      const scripts = container.getElementsByTagName('script');
+      // Execute any scripts in the HTML (existing logic)
+      const scripts = htmlContentContainer.getElementsByTagName('script');
       Array.from(scripts).forEach(script => {
         const newScript = document.createElement('script');
         if (script.src) {
@@ -372,19 +424,21 @@ class TerminalView {
         } else {
           newScript.textContent = script.textContent;
         }
+        // Appending to body and removing might not always be ideal, but it's the existing logic.
         document.body.appendChild(newScript).parentNode.removeChild(newScript);
       });
-      
-      // Add the HTML content to the output
-      addOutput(container);
+      this._addStaticOutputLine(htmlContentContainer); // Add the fully formed HTML element statically
+    } else if (item.text || item.message) { // General text or message, animate this.
+      await this._animateTextOutput(item.text || item.message, item.className || 'command-output');
     } else if (item.type === 'success') {
-      addOutput(item.message || item.content || JSON.stringify(item), 'terminal-success');
+      await this._animateTextOutput(item.message || item.content || JSON.stringify(item), 'terminal-success');
     } else if (item.type === 'warning') {
-      addOutput(item.message || item.content || JSON.stringify(item), 'terminal-warning');
+      await this._animateTextOutput(item.message || item.content || JSON.stringify(item), 'terminal-warning');
     } else if (item.type === 'svg') {
-      this.displaySvg(item.content || item.svg);
+      this.displaySvg(item.content || item.svg); // SVGs are complex, add statically via existing method
     } else {
-      addOutput(JSON.stringify(item));
+      // Default for other objects: stringify and animate as plain text
+      await this._animateTextOutput(JSON.stringify(item), 'command-output');
     }
   }
 
@@ -464,36 +518,27 @@ class TerminalView {
    * Display error message
    * @param {string} message - Error message
    */
-  displayError(message) {
-    const line = document.createElement('div');
-    line.className = 'terminal-error';
-    line.textContent = message;
-    this.outputElement.appendChild(line);
-    this.scrollToBottom();
+  async displayError(message) { // Method becomes async
+    await this._animateTextOutput(message, 'terminal-error');
+    // scrollToBottom is handled by _animateTextOutput
   }
   
   /**
    * Display success message
    * @param {string} message - Success message
    */
-  displaySuccess(message) {
-    const line = document.createElement('div');
-    line.className = 'terminal-success';
-    line.textContent = message;
-    this.outputElement.appendChild(line);
-    this.scrollToBottom();
+  async displaySuccess(message) { // Method becomes async
+    await this._animateTextOutput(message, 'terminal-success');
+    // scrollToBottom is handled by _animateTextOutput
   }
   
   /**
    * Display warning message
    * @param {string} message - Warning message
    */
-  displayWarning(message) {
-    const line = document.createElement('div');
-    line.className = 'terminal-warning';
-    line.textContent = message;
-    this.outputElement.appendChild(line);
-    this.scrollToBottom();
+  async displayWarning(message) { // Method becomes async
+    await this._animateTextOutput(message, 'terminal-warning');
+    // scrollToBottom is handled by _animateTextOutput
   }
 }
 
