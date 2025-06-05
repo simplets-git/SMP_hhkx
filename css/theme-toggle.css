@@ -3,7 +3,7 @@
  */
 
 #theme-toggle {
-  position: absolute;
+  position: fixed;
   top: 65px; /* Moved down 50px from 15px */
   right: 95px; /* Moved left 80px from 15px */
   font-size: 24px;

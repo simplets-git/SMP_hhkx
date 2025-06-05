@@ -84,13 +84,16 @@ const ThemeManager = {
    * @param {string} themeName - Name of the theme to apply
    */
   applyThemeStyles(themeName) {
-    // Remove any existing theme classes
+    // Remove any existing theme classes from the html element
+    document.documentElement.classList.remove('dark-theme', 'light-theme');
+    
+    // Add the new theme class to the html element
+    document.documentElement.classList.add(`${themeName}-theme`);
+
+    // Also remove from body in case they were added by other means or for compatibility
     document.body.classList.remove('dark-theme', 'light-theme');
     
-    // Add the new theme class
-    document.body.classList.add(`${themeName}-theme`);
-    
-    console.log(`Applied theme: ${themeName}`);
+    console.log(`Applied theme: ${themeName} to html element`);
   },
   
   /**

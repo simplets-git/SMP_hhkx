@@ -160,13 +160,26 @@ class TerminalView {
     
     // Listen for history navigation results
     eventBus.on(TERMINAL_EVENTS.ENTRY, (entry) => {
-      if (this.inputElement) {
-        this.inputElement.value = entry.command;
-        
-        // Move cursor to end of input
-        setTimeout(() => {
-          this.inputElement.selectionStart = this.inputElement.selectionEnd = this.inputElement.value.length;
-        }, 0);
+      if (this.inputElement && entry) {
+        if (window.simplets && window.simplets.Terminal && window.simplets.Terminal.inputHandler && typeof window.simplets.Terminal.inputHandler.setValue === 'function') {
+          // Use InputHandler's setValue to update the input and trigger necessary events (like CHANGED for cursor update)
+          window.simplets.Terminal.inputHandler.setValue(entry.command);
+        } else {
+          // Fallback if inputHandler is not available (should not happen in normal operation)
+          console.warn('[TerminalView] InputHandler.setValue not available. Setting input value directly and attempting manual cursor update.');
+          this.inputElement.value = entry.command;
+        }
+      }
+    });
+    
+    // Listen for input changes
+    eventBus.on(TERMINAL_EVENTS.CHANGED, (currentValue) => {
+      if (this.cursorManager) {
+        // The current CursorManager (js/core/cursor.js) listens to the native 'input' event
+        // on the input element to update itself. Calling a specific update method here
+        // based on TERMINAL_EVENTS.CHANGED is redundant and the previous method
+        // 'updateCursorPosition' does not exist on the current CursorManager, causing an error.
+        console.log('[TerminalView] TERMINAL_EVENTS.CHANGED received, cursor will update via its own input listener.');
       }
     });
     
@@ -255,7 +268,7 @@ class TerminalView {
 
     // Create a container for the command line
     const lineContainer = document.createElement('div');
-    lineContainer.className = 'command-output';
+    lineContainer.className = 'command-output historical-prompt-line'; // Added historical-prompt-line
     // Create a single span for the combined prompt and command
     const loggedCommandSpan = document.createElement('span');
     loggedCommandSpan.className = 'terminal-command terminal-user-input'; // Apply styles for inline display, pre-wrap, and selectability
@@ -276,38 +289,39 @@ class TerminalView {
     const outputContainer = container || this.outputElement;
     
     const addOutput = (content, className = '') => {
-      // Create a container for the output line
       const lineContainer = document.createElement('div');
       lineContainer.className = 'command-output' + (className ? ' ' + className : '');
-      
-      // Handle different content types
+
       if (typeof content === 'string') {
-        // Preserve newlines in the output
         const lines = content.split('\n');
-        lines.forEach((line, index) => {
+        lines.forEach((textLine, index) => {
           if (index > 0) {
-            // Add a line break for multi-line content
             lineContainer.appendChild(document.createElement('br'));
           }
-          lineContainer.appendChild(document.createTextNode(line));
+          lineContainer.appendChild(document.createTextNode(textLine));
         });
       } else if (content instanceof HTMLElement) {
         lineContainer.appendChild(content);
-      } else if (content && typeof content === 'object' && content.html) {
-        lineContainer.innerHTML = content.html;
+      } else if (content && typeof content === 'object' && content.html && typeof content.html === 'string') {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content.html;
+        while (tempDiv.firstChild) {
+          lineContainer.appendChild(tempDiv.firstChild);
+        }
+      } else { // Fallback for other types
+        lineContainer.appendChild(document.createTextNode(String(content)));
+      }
+
+      if (this.outputElement) {
+        this.outputElement.appendChild(lineContainer);
       } else {
-        lineContainer.textContent = JSON.stringify(content);
+        console.error("TerminalView: this.outputElement is not available in addOutput.");
       }
       
-      // Add the line to the output container
-      outputContainer.appendChild(lineContainer);
-      
-      // Ensure the output is visible
       this.scrollToBottom();
-      
       return lineContainer;
     };
-    
+
     try {
       // Handle different result types
       if (Array.isArray(output)) {

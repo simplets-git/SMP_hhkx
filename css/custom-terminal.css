@@ -22,7 +22,7 @@
   --terminal-base-row-height: 25px; /* Base height for terminal rows */
 }
 
-body.dark-theme {
+html.dark-theme {
   --bg-color: #000000; /* Pure black background */
   --text-color: #FFFFFF; /* Pure white text */
   --primary-color: #569cd6; /* Blue for links, prompts */
@@ -54,7 +54,7 @@ body.dark-theme {
   color: var(--selection-text-color);
 }
 
-body.light-theme {
+html.light-theme {
   --bg-color: #ffffff; /* White background */
   --text-color: #222222; /* Dark gray/black text */
   --primary-color: #007acc; /* Blue */
@@ -75,12 +75,12 @@ body.light-theme {
 }
 
 /* Theme-specific styling for logged commands */
-body.dark-theme .terminal-command {
+html.dark-theme .terminal-command {
   color: var(--text-color);
   background-color: var(--bg-color);
 }
 
-body.light-theme .terminal-command {
+html.light-theme .terminal-command {
   color: var(--text-color);
   background-color: var(--bg-color);
 }
@@ -123,7 +123,8 @@ html, body {
   margin-left: calc(var(--left-animation-width, 300px) + 50px);
   margin-right: 250px;
   margin-top: 0px;
-  overflow: auto;
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  overflow-x: auto; /* Retain horizontal scroll if needed, or set to hidden */
   padding: 0px 20px 20px 20px;
   box-sizing: border-box;
   background-color: var(--bg-color);
@@ -151,7 +152,7 @@ html, body {
   /* font-family, font-size, line-height, color inherited from #terminal */
   background-color: var(--bg-color);
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: hidden; /* Scrollbar hidden, scrolling handled by JS */
   overflow-x: hidden;
   word-wrap: break-word;
   -webkit-overflow-scrolling: touch;
@@ -196,12 +197,37 @@ html, body {
 /* .terminal-input rule block removed for consolidation below */
 
 /* Ensure proper wrapping for long content */
-.terminal-output > * {
+/* Base style for all direct children of .terminal-output: NO INDENT */
+#terminal > .terminal-output > * {
   margin: 0;
-  padding: 0;
-  line-height: 25px;
-  min-height: 25px;
+  padding: 0; /* Ensures padding-left: 0 by default */
+  line-height: var(--terminal-base-row-height);
+  min-height: var(--terminal-base-row-height);
   display: block;
+  box-sizing: border-box;
+}
+
+/* --- Elements that should NOT be indented (padding-left: 0) --- */
+#terminal > .terminal-output > div.welcome-message,
+#terminal > .terminal-output > div.welcome-spacer,
+#terminal > .terminal-output > div.terminal-input-line {
+  padding-left: 0;
+}
+
+/* --- Elements that SHOULD be indented by 35px --- */
+/* General command output */
+#terminal > .terminal-output > div.command-output {
+
+}
+
+/* Error messages - attempting to force indentation */
+html body #terminal > .terminal-output > div.terminal-error {
+  /* padding-left: 35px; */ /* Relying on high specificity - REMOVED */
+}
+
+/* Specifically un-indent historical prompt lines */
+#terminal > .terminal-output > div.historical-prompt-line {
+  padding-left: 0;
 }
 
 /* Empty rule block removed */

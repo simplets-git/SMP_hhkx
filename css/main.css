@@ -65,7 +65,7 @@ body::-webkit-scrollbar {
 
 /* Version display */
 #version-display {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 20px;
   color: var(--text-color);

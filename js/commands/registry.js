@@ -7,6 +7,7 @@
 
 // Import TextFormatter early to avoid circular dependencies
 import TextFormatter from '../utils/text-formatter.js';
+import factsCommand from './facts.js';
 import { eventBus } from '../utils/events.js';
 import { COMMAND_EVENTS } from '../core/terminal-events.js';
 
@@ -24,6 +25,10 @@ class CommandRegistry {
       'tools': [],
       'other': []
     };
+
+    // Register built-in commands
+    this.registerCommandWithCategory(factsCommand.name, factsCommand.handler, factsCommand.category);
+    this.registerHelpText(factsCommand.name, factsCommand.help);
     
     // Setup event listener for command registration
     eventBus.on(COMMAND_EVENTS.REGISTER, (data) => {

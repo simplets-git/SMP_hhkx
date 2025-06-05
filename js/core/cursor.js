@@ -170,6 +170,54 @@ class CursorManager {
     // Stop blinking
     this.stopBlinking();
   }
+
+  /**
+   * Synchronize the cursor manager's state with a new input value.
+   * This is typically used when the input value is set programmatically.
+   * @param {string} newValueFromInputHandler - The new value for the input field.
+   */
+  syncWithValue(newValueFromInputHandler) {
+    if (!this.inputElement) return;
+
+    const wasBlinking = !!this.blinkInterval;
+    if (wasBlinking) {
+      // Stop blinking. This internally calls restoreOriginalText(), which sets
+      // inputElement.value to the *current* this.originalValue before this sync.
+      this.stopBlinking();
+    }
+
+    // Now, inputElement.value might have been reset by stopBlinking -> restoreOriginalText.
+    // We must definitively set it to the new value from the input handler.
+    this.inputElement.value = newValueFromInputHandler;
+    this.originalValue = newValueFromInputHandler; // Update internal state to the new source of truth
+
+    // Ensure the browser's actual cursor position is within the bounds of the new value.
+    // If selectionStart was beyond the new length (e.g., previous text was longer),
+    // move it to the end of the new value.
+    if (this.inputElement.selectionStart > newValueFromInputHandler.length) {
+      this.inputElement.selectionStart = newValueFromInputHandler.length;
+      this.inputElement.selectionEnd = newValueFromInputHandler.length;
+    }
+    // Update our internal cursor position tracking.
+    this.cursorPosition = this.inputElement.selectionStart;
+
+    // Refresh the visual cursor display based on the new state.
+    // updateCursor() will use the new this.originalValue and this.cursorPosition.
+    // It first calls restoreOriginalText (which is now safe as originalValue is current)
+    // and then adds the visual cursor character if isVisible is true.
+    this.updateCursor();
+
+    if (wasBlinking) {
+      this.startBlinking(); // Restart blinking. startBlinking itself calls updateCursor initially.
+    } else {
+      // If not blinking (e.g., input was blurred and re-focused programmatically),
+      // ensure the cursor is visibly updated if the input element is the active one.
+      if (document.activeElement === this.inputElement) {
+        this.isVisible = true; // Assume it should be visible if focused
+        this.updateCursor(); // Ensure the visual cursor character is present
+      }
+    }
+  }
   
   /**
    * Set up event listeners for cursor
@@ -192,14 +240,18 @@ class CursorManager {
     
     // Handle key events
     this.inputElement.addEventListener('keydown', (event) => {
-      // For special keys like arrows, we need to restore the original text
-      // to allow the browser to handle the navigation correctly
-      this.restoreOriginalText();
-      
-      // After the key event is processed, update the cursor
-      setTimeout(() => {
-        this.updateCursor();
-      }, 0);
+      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+        // For keys other than history navigation, restore text to allow normal browser handling
+        // and then schedule a cursor update after the browser has processed the key.
+        this.restoreOriginalText();
+        setTimeout(() => {
+          this.updateCursor();
+        }, 0);
+      }
+      // For ArrowUp/ArrowDown, InputHandler.setValue() will change the input value.
+      // This triggers CursorManager's 'input' event listener, which is responsible for
+      // updating originalValue and calling updateCursor(). No further action related to
+      // cursor updates is needed from this keydown listener for these specific keys.
     });
     
     // Handle click events

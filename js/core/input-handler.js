@@ -245,10 +245,25 @@ class InputHandler {
    */
   setValue(value) {
     if (this.inputElement) {
-      this.inputElement.value = value || '';
+      const newValue = value || '';
+      this.inputElement.value = newValue;
+
+      // Directly notify CursorManager to synchronize its state and visual display.
+      // This is crucial for programmatic changes like history navigation to avoid race conditions
+      // with the cursor's blink cycle and its internal 'originalValue'.
+      if (window.simplets && window.simplets.Terminal && window.simplets.Terminal.view && 
+          window.simplets.Terminal.view.cursorManager && 
+          typeof window.simplets.Terminal.view.cursorManager.syncWithValue === 'function') {
+        window.simplets.Terminal.view.cursorManager.syncWithValue(newValue);
+      } else {
+        console.warn('[InputHandler] CursorManager.syncWithValue not available. Cursor might not update correctly for programmatic changes.');
+      }
       
-      // Emit change event
-      eventBus.emit(TERMINAL_EVENTS.CHANGED, this.inputElement.value);
+      // Emit general change event for other potential listeners.
+      // Note: CursorManager also has its own 'input' event listener on the input element,
+      // which will also fire due to 'this.inputElement.value = newValue'. 
+      // The syncWithValue call ensures originalValue is correct before that listener might run or blink interval interferes.
+      eventBus.emit(TERMINAL_EVENTS.CHANGED, newValue);
     }
   }
 

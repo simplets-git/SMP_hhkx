@@ -129,4 +129,83 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set up side button event listeners
   setupSideButtons();
   console.log('Side buttons initialized');
+
+  // Robust terminal scroll handler using MutationObserver
+  let lastTerminalOutput = null;
+  let wheelHandler = null;
+
+  function attachTerminalScrollHandler() {
+    const terminalOutput = document.querySelector('.terminal-output');
+    if (!terminalOutput || terminalOutput === lastTerminalOutput) return;
+    if (wheelHandler) {
+      window.removeEventListener('wheel', wheelHandler, { passive: false });
+    }
+    wheelHandler = function(event) {
+      const target = event.target;
+      if (target.closest('input, textarea, select, button, a, [contenteditable="true"]')) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (terminalOutput.scrollHeight > terminalOutput.clientHeight) {
+        terminalOutput.scrollTop += event.deltaY;
+      }
+    };
+    window.addEventListener('wheel', wheelHandler, { passive: false });
+    lastTerminalOutput = terminalOutput;
+    console.log('Terminal scroll handler attached to .terminal-output');
+  }
+
+  // Observe for .terminal-output being added/replaced
+  const observer = new MutationObserver(() => {
+    attachTerminalScrollHandler();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  // Initial attach in case it's already present
+  attachTerminalScrollHandler();
+
+
+  // Logic to clear text selection on a 'true' click, not at the end of a drag-selection
+  let mouseDownPos = null;
+  const CLICK_THRESHOLD = 5; // Max pixels moved to be considered a click
+
+  document.addEventListener('mousedown', (e) => {
+    mouseDownPos = { x: e.clientX, y: e.clientY };
+  }, true); // Use capture phase to see event early
+
+  document.addEventListener('click', (e) => {
+    // Check if the click target is the theme toggle button or its child
+    let targetElement = e.target;
+    let isThemeToggleClick = false;
+    while (targetElement != null) {
+      if (targetElement.id === 'theme-toggle') {
+        isThemeToggleClick = true;
+        break;
+      }
+      targetElement = targetElement.parentElement;
+    }
+
+    if (isThemeToggleClick) {
+      // If theme toggle was clicked, don't clear selection
+      mouseDownPos = null; // Still reset mousedown state
+      return;
+    }
+
+    if (window.getSelection && mouseDownPos) {
+      const dx = Math.abs(e.clientX - mouseDownPos.x);
+      const dy = Math.abs(e.clientY - mouseDownPos.y);
+
+      if (dx < CLICK_THRESHOLD && dy < CLICK_THRESHOLD) {
+        // This is considered a 'true' click (not the end of a drag)
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0 && selection.type === 'Range') {
+          // If there's an active text selection, clear it
+          selection.removeAllRanges();
+        }
+      }
+    }
+    mouseDownPos = null; // Reset for the next mousedown sequence
+  }, true); // Use capture phase for click as well
+
+  console.log('Enhanced click handler (ignores theme toggle) for clearing selection initialized');
 });

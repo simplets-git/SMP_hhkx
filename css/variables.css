@@ -72,7 +72,7 @@
 }
 
 /* Light Theme */
-body.light-theme {
+html.light-theme {
   /* Core Colors */
   --bg-color: white;
   --text-color: black;

@@ -18,7 +18,6 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   word-break: normal;
-  padding-left: var(--terminal-content-indent);
   padding-right: 60px;
   display: block;
   width: 100%;
@@ -40,7 +39,6 @@
   overflow: visible;
   word-wrap: break-word;
   word-break: normal;
-  padding-left: var(--terminal-content-indent);
   padding-right: 60px;
   display: block;
   width: 100%;
@@ -196,7 +194,6 @@
   min-height: var(--terminal-base-row-height);
   line-height: var(--line-height-base);
   white-space: pre-wrap;
-  padding-left: var(--terminal-content-indent);
   padding-right: 60px;
   font-size: var(--font-size-base);
   font-family: var(--font-mono);

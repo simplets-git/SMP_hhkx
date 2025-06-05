@@ -6,12 +6,12 @@
   width: 100%;
   font-family: 'Share Tech Mono', monospace;
   font-size: 18px;
-  line-height: 22px;
+  line-height: var(--terminal-base-row-height);
   letter-spacing: 0.4px;
   color: var(--text-color);
   padding: 0;
   margin: 0;
-  height: 110px; /* 5 lines at 22px line height */
+  height: calc(5 * var(--terminal-base-row-height)); /* 5 lines */
   overflow: hidden;
   pointer-events: none; /* Allow clicks to pass through to terminal */
   z-index: 10; /* Ensure it's on top */
@@ -20,7 +20,8 @@
 }
 
 .welcome-line {
-  height: 22px;
+  height: var(--terminal-base-row-height);
+  line-height: var(--terminal-base-row-height);
   padding: 0;
   margin: 0;
   white-space: pre;

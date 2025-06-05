@@ -57,14 +57,6 @@ function handleProjectCommand() {
       className: 'project-svg-block'
     },
     
-    // Clear spacer to prevent overlap with next content - adding more height and unique ID
-    {
-      type: 'html_block',
-      message: `
-        <div id="${instanceId}-spacer" class="project-clear-spacer"></div>
-      `,
-      className: 'project-clear-spacer'
-    },
     
     // Part 2: Additional info - add a bit more spacing after SVGs
     "",
