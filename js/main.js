@@ -16,6 +16,14 @@ import { eventBus } from './utils/events.js';
 import SimpleMatrixAnimation from './animations/sidebar/simple-matrix.js';
 import ThemeSwitcher from './utils/theme-switcher.js';
 
+// Flag for conditional debug logs (unused)
+const ENABLE_DEBUG_LOG = false;
+// Silence default logs when debug disabled
+if (!ENABLE_DEBUG_LOG) {
+  console.log = () => {};
+  console.debug = () => {};
+}
+
 // Import commands
 import { verifyCommandsLoaded } from './commands/loader.js';
 
@@ -70,43 +78,52 @@ function setupSideButtons() {
 
 // Document ready event
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Content Loaded - Initializing application');
+  console.time('TotalStartup');
+  
+  // Make the app visible now that critical setup is done or initiated
+  document.body.classList.remove('loading');
+  console.log('Body loading class removed, app should be visible.');
   
   // Initialize theme
   ThemeManager.init();
-  console.log('Theme manager initialized');
-  
-  // Initialize theme switcher
   ThemeSwitcher.init();
-  console.log('Theme switcher initialized');
   
-  // Initialize settings manager
+  // Verify commands are loaded (this is likely async or quick)
+  verifyCommandsLoaded();
+  
+  console.time('settingsInit');
   SettingsManager.init().then(() => {
-    console.log('Settings manager initialized successfully');
+    console.timeEnd('settingsInit');
     
     // Initialize the terminal AFTER settings are ready
     if (window.simplets && window.simplets.Terminal) {
-      console.log('Initializing terminal from settings callback');
+      console.time('terminalInit');
       window.simplets.Terminal.initialize();
+      console.timeEnd('terminalInit');
     } else {
       console.error('Terminal object not found in window.simplets');
     }
     
-    // Initialize matrix animation
-    const terminalContainer = document.getElementById('terminal-container');
-    if (terminalContainer) {
-      SimpleMatrixAnimation.create(terminalContainer);
-      console.log('Matrix animation initialized');
-    } else {
-      console.error('Terminal container not found for matrix animation');
-    }
+    // Defer matrix animation to improve perceived load time
+    setTimeout(() => {
+      const terminalContainer = document.getElementById('terminal-container');
+      if (terminalContainer) {
+        console.time('matrixInitDeferred');
+        SimpleMatrixAnimation.create(terminalContainer);
+        console.timeEnd('matrixInitDeferred');
+      } else {
+        console.error('Terminal container not found for deferred matrix animation');
+      }
+    }, 100); // Delay animation start by 100ms after settings/terminal init
   }).catch(error => {
     console.error('Settings initialization failed:', error);
+    console.timeEnd('settingsInit');
     
     // If settings initialization fails, still initialize the terminal
     if (window.simplets && window.simplets.Terminal) {
-      console.log('Initializing terminal after settings failure');
+      console.time('terminalInit');
       window.simplets.Terminal.initialize();
+      console.timeEnd('terminalInit');
     } else {
       console.error('Terminal object not found in window.simplets after settings failure');
     }
@@ -116,20 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileLogo = document.querySelector('.mobile-logo');
   if (mobileLogo) {
     mobileLogo.addEventListener('click', () => ThemeSwitcher.toggleTheme());
-    console.log('Mobile logo click handler initialized');
   }
   
   // Set version display
   const versionDiv = document.getElementById('version-display');
   if (versionDiv) {
     versionDiv.textContent = `Version: ${CONFIG.version}`;
-    console.log(`Version set to ${CONFIG.version}`);
   }
   
   // Set up side button event listeners
   setupSideButtons();
-  console.log('Side buttons initialized');
-
+  
   // Robust terminal scroll handler using MutationObserver
   let lastTerminalOutput = null;
   let wheelHandler = null;
@@ -153,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.addEventListener('wheel', wheelHandler, { passive: false });
     lastTerminalOutput = terminalOutput;
-    console.log('Terminal scroll handler attached to .terminal-output');
   }
 
   // Observe for .terminal-output being added/replaced
@@ -163,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
   observer.observe(document.body, { childList: true, subtree: true });
   // Initial attach in case it's already present
   attachTerminalScrollHandler();
-
 
   // Logic to clear text selection on a 'true' click, not at the end of a drag-selection
   let mouseDownPos = null;
@@ -207,5 +219,5 @@ document.addEventListener('DOMContentLoaded', () => {
     mouseDownPos = null; // Reset for the next mousedown sequence
   }, true); // Use capture phase for click as well
 
-  console.log('Enhanced click handler (ignores theme toggle) for clearing selection initialized');
+  console.timeEnd('TotalStartup');
 });

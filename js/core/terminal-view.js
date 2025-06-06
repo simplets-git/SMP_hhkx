@@ -141,9 +141,10 @@ class TerminalView {
       this.outputElement.className = 'terminal-output';
       this.terminalElement.appendChild(this.outputElement);
       
-      // Show static password prompt and animate it in place
+      // Show static password prompt
       this.showGreeting(terminalCore.getGreeting());
-      await this.fancyUpdateGreeting(terminalCore.getGreeting());
+      // fancyUpdateGreeting was causing a long delay here, removed for initial prompt.
+      // The fancy animation is still used for the welcome message after successful login.
       // Create input line for user
       this.createInputLine();
       // Focus the input

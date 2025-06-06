@@ -25,6 +25,14 @@ import os
 import signal
 import sys
 from contextlib import closing
+import time
+import logging
+
+# Slow request threshold in milliseconds
+SLOW_THRESHOLD_MS = 100.0
+
+# Configure logging for request timing
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(message)s')
 
 def find_free_port():
     """Find a free port on localhost"""
@@ -43,17 +51,37 @@ def handle_exit(signum, frame):
         pass
     sys.exit(0)
 
+class LoggingHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    """HTTP handler that logs only slow requests"""
+    def do_GET(self):
+        start = time.time()
+        super().do_GET()
+        duration = (time.time() - start) * 1000
+        if duration >= SLOW_THRESHOLD_MS:
+            logging.warning("Slow GET %s: %.2fms", self.path, duration)
+
+    def do_POST(self):
+        start = time.time()
+        super().do_POST()
+        duration = (time.time() - start) * 1000
+        if duration >= SLOW_THRESHOLD_MS:
+            logging.warning("Slow POST %s: %.2fms", self.path, duration)
+
 def main():
     # Register signal handlers
     signal.signal(signal.SIGINT, handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
     
-    # Find an available port
+    # Measure port selection time
+    t0 = time.time()
     port = find_free_port()
+    logging.info("Port found in %.2fms", (time.time() - t0) * 1000)
     
-    # Create the HTTP server
-    handler = http.server.SimpleHTTPRequestHandler
+    # Measure server setup time
+    t1 = time.time()
+    handler = LoggingHTTPRequestHandler
     httpd = socketserver.TCPServer(("", port), handler)
+    logging.info("Server set up in %.2fms", (time.time() - t1) * 1000)
     
     # Save the PID and port for reference
     with open('.server-pid', 'w') as f:
@@ -62,12 +90,14 @@ def main():
     with open('.server-port', 'w') as f:
         f.write(str(port))
     
-    # Print server information
-    print(f"SIMPLETS Terminal server running at http://localhost:{port}")
-    print("Press Ctrl+C to stop the server")
+    # Log server start info
+    logging.info("Server running at http://localhost:%d", port)
+    logging.info("Press Ctrl+C to stop the server")
     
-    # Open the browser
+    # Measure browser launch time
+    t2 = time.time()
     webbrowser.open(f"http://localhost:{port}")
+    logging.info("Browser opened in %.2fms", (time.time() - t2) * 1000)
     
     # Start the server
     try:

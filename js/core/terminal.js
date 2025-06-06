@@ -50,28 +50,24 @@ class Terminal {
       this.core.setPrompt('Password: ');
       this.view.initialize(); 
       
-      // Now connect the input handler to the input element
-      console.log('[Terminal] Connecting input handler to input element');
+      // After view init, wait for input element before finishing setup
+      const finishInit = () => {
+        this.controller.initialize();
+        this.setupEventListeners();
+        this.initialized = true;
+        console.log('Terminal initialized successfully');
+        eventBus.emit(TERMINAL_EVENTS.TERMINAL_INITIALIZED, this);
+      };
+      
       if (this.view.inputElement) {
-        console.log('[Terminal] Input element found, initializing input handler');
         this.inputHandler.initialize(this.view.inputElement);
+        finishInit();
       } else {
-        console.error('[Terminal] ERROR: Input element not found in view');
+        eventBus.once('terminal:input:element:ready', (inputEl) => {
+          this.inputHandler.initialize(inputEl);
+          finishInit();
+        });
       }
-      
-      // Initialize controller after input handler is set up
-      this.controller.initialize();
-      
-      // Set up event listeners
-      this.setupEventListeners();
-      
-      this.initialized = true;
-      
-      console.log('Terminal initialized successfully');
-      
-      // Emit initialization event
-      eventBus.emit(TERMINAL_EVENTS.TERMINAL_INITIALIZED, this);
-      
       return this;
     } catch (error) {
       console.error('Error initializing terminal:', error);

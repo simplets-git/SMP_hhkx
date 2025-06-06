@@ -5,8 +5,8 @@
  */
 
 // Configuration
-const DEBUG_MODE = true; // Set to true to enable detailed event logging
-const LOG_EVENTS = true; // Set to true to log all events
+const DEBUG_MODE = false; // Disable detailed event logging
+const LOG_EVENTS = false; // Disable all event logs
 
 /**
  * Event bus class with enhanced features
@@ -166,7 +166,7 @@ if (window.__globalEventBus) {
   globalEventBus = window.__globalEventBus;
 } else {
   globalEventBus = new EventBus();
-  globalEventBus.setDebugMode(true);
+  globalEventBus.setDebugMode(DEBUG_MODE);
   globalEventBus._debugId = Math.floor(Math.random() * 1000000);
   window.eventBus = globalEventBus;
   window.__globalEventBus = globalEventBus;

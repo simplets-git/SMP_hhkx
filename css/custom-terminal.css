@@ -86,7 +86,7 @@ html.light-theme .terminal-command {
 }
 
 html, body {
-  background-color: var(--bg-color) !important; /* Use theme variable */
+  background-color: var(--bg-color); /* Use theme variable */
   color: var(--text-color); /* Use theme variable */
   margin: 0;
   padding: 0;
