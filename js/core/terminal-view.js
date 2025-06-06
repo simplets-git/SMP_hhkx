@@ -211,6 +211,19 @@ class TerminalView {
     this.terminalElement.appendChild(inputLine);
     // Emit an event to notify that the input element is ready
     eventBus.emit('terminal:input:element:ready', this.inputElement);
+    // Automatically focus the new input element
+    if (this.inputElement) {
+      this.inputElement.focus();
+      // Add a blur event listener to attempt to refocus if focus is lost
+      this.inputElement.addEventListener('blur', () => {
+        // Use a minimal timeout to avoid potential conflicts and allow browser to process other events
+        setTimeout(() => {
+          if (this.inputElement) { // Check if element still exists
+            this.inputElement.focus();
+          }
+        }, 0);
+      });
+    }
   }
 
   /**
@@ -259,6 +272,22 @@ class TerminalView {
       }
     });
     
+    // Add a click listener to the terminal element to refocus the input
+    if (this.terminalElement) {
+      this.terminalElement.addEventListener('click', (event) => {
+        // Only focus if an input element exists,
+        // the click target is not the input element itself,
+        // the input element is not already focused,
+        // and no text is currently selected in the window.
+        if (this.inputElement &&
+            event.target !== this.inputElement &&
+            document.activeElement !== this.inputElement &&
+            window.getSelection().toString() === '') {
+          this.inputElement.focus();
+        }
+      });
+    }
+
     // Handle terminal interactions with better text selection support
     this.setupSelectionHandling();
   }
@@ -630,9 +659,9 @@ class TerminalView {
     });
 
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const stagger = 80;  // ms between starts
+    const stagger = 40;  // ms between starts (50% faster)
     const rollCount = 6; // rolls per character
-    const interval = 50; // ms per roll
+    const interval = 25; // ms per roll (50% faster)
 
     const promises = spans.map((span, idx) => new Promise(resolve => {
       setTimeout(() => {
@@ -678,17 +707,24 @@ class TerminalView {
     greetingEl.innerHTML = '';
     // create spans for each character
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const chars = text.split('');
-    const spans = chars.map(ch => {
+    const fullText = 'Welcome to the abyss. Type [help] to interact.';
+    const helpStartIndex = fullText.indexOf('[help]') + 1; // +1 to start after '['
+    const helpEndIndex = helpStartIndex + 'help'.length; // End after 'p'
+
+    const chars = fullText.split('');
+    const spans = chars.map((ch, index) => {
       const span = document.createElement('span');
       span.dataset.final = ch;
       span.textContent = '';
+      if (index >= helpStartIndex && index < helpEndIndex) {
+        span.classList.add('bold-text');
+      }
       greetingEl.appendChild(span);
       return span;
     });
-    const stagger = 80;
+    const stagger = 26;  // ms between starts (35% faster)
     const rollCount = 6;
-    const interval = 50;
+    const interval = 16; // ms per roll (35% faster)
     const promises = spans.map((span, idx) => new Promise(resolve => {
       setTimeout(() => {
         let rolls = 0;

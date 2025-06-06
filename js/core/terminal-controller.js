@@ -133,7 +133,9 @@ class TerminalController {
           const oldSpacer = terminalView.outputElement.querySelector('.welcome-spacer');
           if (oldSpacer) oldSpacer.style.visibility = 'hidden';
           // fancy animated welcome reveal
-          terminalCore.config.greetings = 'Welcome to the abyss. Type _help_ to interact.';
+          terminalCore.config.greetings = 'Welcome to the abyss. Type [help] to interact.';
+
+
           await terminalView.fancyAnimateGreeting(terminalCore.getGreeting());
           await terminalView.displaySuccess('Terminal unlocked.');
           // switch prompt to anonymous

@@ -134,7 +134,11 @@ html, body {
   z-index: 10;
   max-width: 950px;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 18px; /* Base font size for terminal */
+  font-size: 18px; /* Additional styles for the terminal */
+
+  .bold-text {
+    font-weight: bold;
+  }
   line-height: 25px; /* Base line height for terminal */
   letter-spacing: 0.4px;
   -webkit-user-select: text;

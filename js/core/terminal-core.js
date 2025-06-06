@@ -16,7 +16,7 @@ class TerminalCore {
     this.config = {
       name: 'simplets_terminal',
       historySize: 100,
-      greetings: 'Welcome to the abyss. Type help to interact.',
+      greetings: 'Welcome to the abyss. Type [help] to interact.',
       prompt: `${CONFIG.username}: `
     };
     
