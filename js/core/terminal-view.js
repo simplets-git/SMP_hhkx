@@ -114,7 +114,7 @@ class TerminalView {
    * Initialize the terminal view
    * @returns {Object} Terminal view instance
    */
-  initialize() {
+  async initialize() {
     if (this.initialized) {
       console.log('Terminal view already initialized');
       return this;
@@ -141,12 +141,11 @@ class TerminalView {
       this.outputElement.className = 'terminal-output';
       this.terminalElement.appendChild(this.outputElement);
       
-      // Create input line
-      this.createInputLine();
-      
-      // Show greeting
+      // Show static password prompt and animate it in place
       this.showGreeting(terminalCore.getGreeting());
-      
+      await this.fancyUpdateGreeting(terminalCore.getGreeting());
+      // Create input line for user
+      this.createInputLine();
       // Focus the input
       this.inputElement.focus();
       
@@ -302,37 +301,81 @@ class TerminalView {
   }
 
   /**
+   * Animate the prompt text with overlapping random rolls.
+   * @param {string} text - Prompt text to animate
+   * @returns {Promise}
+   */
+  async animatePrompt(text) {
+    if (!this.promptElement) return;
+    // clear current prompt
+    this.promptElement.innerHTML = '';
+    // create spans for each character
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = text.split('');
+    const spans = chars.map(ch => {
+      const span = document.createElement('span');
+      span.dataset.final = ch;
+      span.textContent = '';
+      this.promptElement.appendChild(span);
+      return span;
+    });
+    // animation settings
+    const stagger = 80;
+    const rollCount = 6;
+    const interval = 50;
+    // roll each span
+    const promises = spans.map((span, idx) => new Promise(resolve => {
+      setTimeout(() => {
+        let rolls = 0;
+        const timer = setInterval(() => {
+          if (rolls < rollCount) {
+            span.textContent = letters.charAt(Math.floor(Math.random() * letters.length));
+            rolls++;
+          } else {
+            clearInterval(timer);
+            span.textContent = span.dataset.final;
+            resolve();
+          }
+        }, interval);
+      }, idx * stagger);
+    }));
+    return Promise.all(promises);
+  }
+
+  /**
    * Show greeting message
    * @param {string} greeting - Greeting message
    */
   showGreeting(greeting) {
     if (!greeting) return;
     
-    // Create container, but animation will fill it.
-    const greetingContainer = document.createElement('div');
-    greetingContainer.className = 'welcome-message';
-    this.outputElement.appendChild(greetingContainer);
+    // Reuse or create greeting container
+    let greetingContainer = this.outputElement.querySelector('.welcome-message');
+    const firstTime = !greetingContainer;
+    if (firstTime) {
+      greetingContainer = document.createElement('div');
+      greetingContainer.className = 'welcome-message';
+      this.outputElement.appendChild(greetingContainer);
+    } else {
+      greetingContainer.innerHTML = '';
+    }
+    // Make sure it's visible
+    greetingContainer.style.visibility = 'visible';
 
-    this._animateTextOutput(greeting, '', greetingContainer) // Animate into the pre-added container
+    this._animateTextOutput(greeting, '', greetingContainer)
       .then(() => {
-        // Add a spacer after the welcome message animation is done
-        const spacer = document.createElement('div');
-        spacer.className = 'welcome-spacer';
-        this.outputElement.appendChild(spacer);
-        
-        this.outputElement.offsetHeight; // Force a reflow
+        // Ensure spacer exists to reserve height
+        let spacer = this.outputElement.querySelector('.welcome-spacer');
+        if (!spacer) {
+          spacer = document.createElement('div');
+          spacer.className = 'welcome-spacer';
+          this.outputElement.appendChild(spacer);
+        }
+        // Make sure spacer is visible
+        spacer.style.visibility = 'visible';
         this.scrollToBottom();
       })
-      .catch(error => {
-        console.error("Error animating greeting: ", error);
-        // Fallback to instant display if animation fails
-        greetingContainer.textContent = greeting; // Set text directly
-        const spacer = document.createElement('div');
-        spacer.className = 'welcome-spacer';
-        this.outputElement.appendChild(spacer);
-        this.outputElement.offsetHeight;
-        this.scrollToBottom();
-      });
+      .catch(error => console.error("Error animating greeting: ", error));
   }
 
   /**
@@ -483,20 +526,189 @@ class TerminalView {
    * Clear the terminal
    */
   clear() {
-    this.outputElement.innerHTML = '';
-    
-    // Re-add greeting with proper spacing if it exists
-    this.showGreeting(terminalCore.getGreeting());
-    
-    // Ensure the cursor is visible after clearing
-    if (this.cursorManager) {
-      this.cursorManager.show();
+    // Remove all output lines except greeting and spacer to lock layout
+    const children = Array.from(this.outputElement.children);
+    children.forEach(child => {
+      if (!child.classList.contains('welcome-message') && !child.classList.contains('welcome-spacer')) {
+        this.outputElement.removeChild(child);
+      }
+    });
+
+    // Reset cursor and input line
+    if (this.cursorManager) this.cursorManager.show();
+    this.createInputLine();
+    if (this.inputElement) this.inputElement.focus();
+  }
+
+  /**
+   * Remove existing greeting and spacer
+   */
+  removeGreeting() {
+    if (this.outputElement) {
+      const greetingEl = this.outputElement.querySelector('.welcome-message');
+      if (greetingEl) {
+        // Hide greeting but preserve its space to avoid layout jump
+        greetingEl.style.visibility = 'hidden';
+      }
+      const spacer = this.outputElement.querySelector('.welcome-spacer');
+      if (spacer) spacer.remove();
     }
-    
-    // Focus the input element to ensure keyboard events work
-    if (this.inputElement) {
-      this.inputElement.focus();
+  }
+
+  /**
+   * Update existing greeting in place with new text
+   * @param {string} greeting - New greeting message
+   */
+  updateGreeting(greeting) {
+    const greetingEl = this.outputElement.querySelector('.welcome-message');
+    if (!greetingEl) return;
+    // clear prior text
+    greetingEl.innerHTML = '';
+    // animate into existing container and then add spacer
+    this._animateTextOutput(greeting, '', greetingEl)
+      .then(() => {
+        const spacer = document.createElement('div');
+        spacer.className = 'welcome-spacer';
+        greetingEl.parentNode.insertBefore(spacer, greetingEl.nextSibling);
+        this.outputElement.offsetHeight; // force reflow
+        this.scrollToBottom();
+      })
+      .catch(error => console.error('Error updating greeting:', error));
+  }
+
+  /**
+   * Prepend a greeting message above all existing lines
+   * @param {string} greeting - Greeting message
+   * @returns {Promise} resolves after animation
+   */
+  prependGreeting(greeting) {
+    if (!this.outputElement) return Promise.resolve();
+    // Create container at top
+    const greetingContainer = document.createElement('div');
+    greetingContainer.className = 'welcome-message';
+    this.outputElement.insertBefore(greetingContainer, this.outputElement.firstChild);
+    // Animate text into it and add spacer
+    return this._animateTextOutput(greeting, '', greetingContainer)
+      .then(() => {
+        const spacer = document.createElement('div');
+        spacer.className = 'welcome-spacer';
+        this.outputElement.insertBefore(spacer, greetingContainer.nextSibling);
+        this.outputElement.offsetHeight;
+        this.scrollToBottom();
+      })
+      .catch(error => console.error('Error prepending greeting:', error));
+  }
+
+  /**
+   * Fancy animate a greeting with overlapping character rolls.
+   * @param {string} text - Greeting text to animate
+   * @returns {Promise} resolves when animation completes
+   */
+  fancyAnimateGreeting(text) {
+    if (!this.outputElement) return Promise.resolve();
+    // Reuse or create greeting container at top
+    let container = this.outputElement.querySelector('.welcome-message');
+    const firstTimeFA = !container;
+    if (firstTimeFA) {
+      container = document.createElement('div');
+      container.className = 'welcome-message';
+      this.outputElement.insertBefore(container, this.outputElement.firstChild);
+    } else {
+      container.innerHTML = '';
     }
+    // Make sure it's visible
+    container.style.visibility = 'visible';
+
+    const chars = text.split('');
+    const spans = chars.map(ch => {
+      const span = document.createElement('span');
+      span.dataset.final = ch;
+      span.textContent = '';
+      container.appendChild(span);
+      return span;
+    });
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const stagger = 80;  // ms between starts
+    const rollCount = 6; // rolls per character
+    const interval = 50; // ms per roll
+
+    const promises = spans.map((span, idx) => new Promise(resolve => {
+      setTimeout(() => {
+        let rolls = 0;
+        const timer = setInterval(() => {
+          if (rolls < rollCount) {
+            span.textContent = letters.charAt(Math.floor(Math.random() * letters.length));
+            rolls++;
+          } else {
+            clearInterval(timer);
+            span.textContent = span.dataset.final;
+            resolve();
+          }
+        }, interval);
+      }, idx * stagger);
+    }));
+
+    return Promise.all(promises)
+      .then(() => {
+        // Ensure spacer exists
+        let spacer = this.outputElement.querySelector('.welcome-spacer');
+        if (!spacer) {
+          spacer = document.createElement('div');
+          spacer.className = 'welcome-spacer';
+          this.outputElement.appendChild(spacer);
+        }
+        // Make sure spacer is visible
+        spacer.style.visibility = 'visible';
+        this.scrollToBottom();
+      })
+      .catch(error => console.error('Error in fancyAnimateGreeting:', error));
+  }
+
+  /**
+   * Fancy animate an existing greeting message with overlapping character rolls.
+   * @param {string} text - Greeting text to animate
+   * @returns {Promise}
+   */
+  async fancyUpdateGreeting(text) {
+    const greetingEl = this.outputElement.querySelector('.welcome-message');
+    if (!greetingEl) return;
+    // clear existing text
+    greetingEl.innerHTML = '';
+    // create spans for each character
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = text.split('');
+    const spans = chars.map(ch => {
+      const span = document.createElement('span');
+      span.dataset.final = ch;
+      span.textContent = '';
+      greetingEl.appendChild(span);
+      return span;
+    });
+    const stagger = 80;
+    const rollCount = 6;
+    const interval = 50;
+    const promises = spans.map((span, idx) => new Promise(resolve => {
+      setTimeout(() => {
+        let rolls = 0;
+        const timer = setInterval(() => {
+          if (rolls < rollCount) {
+            span.textContent = letters.charAt(Math.floor(Math.random() * letters.length));
+            rolls++;
+          } else {
+            clearInterval(timer);
+            span.textContent = span.dataset.final;
+            resolve();
+          }
+        }, interval);
+      }, idx * stagger);
+    }));
+    await Promise.all(promises);
+    // add spacer after animation
+    const spacer = document.createElement('div');
+    spacer.className = 'welcome-spacer';
+    greetingEl.parentNode.insertBefore(spacer, greetingEl.nextSibling);
+    this.scrollToBottom();
   }
 
   /**

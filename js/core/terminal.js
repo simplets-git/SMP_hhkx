@@ -45,6 +45,9 @@ class Terminal {
       
       // Initialize terminal components
       this.core.initialize();
+      // Show password prompt initially
+      this.core.config.greetings = 'Please enter the password:';
+      this.core.setPrompt('Password: ');
       this.view.initialize(); 
       
       // Now connect the input handler to the input element

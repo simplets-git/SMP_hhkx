@@ -17,6 +17,7 @@ class TerminalController {
     
     // State
     this.initialized = false;
+    this.isAuthenticated = false; // new flag to track login state
     this.isProcessingCommand = false;
   }
 
@@ -103,7 +104,7 @@ class TerminalController {
    * Handle command submission from the input handler
    * @param {string} command - Command to handle
    */
-  handleCommandSubmission(command) {
+  async handleCommandSubmission(command) {
     console.log('[TerminalController] Handling command submission:', command);
     if (!command) {
       console.warn('[TerminalController] Empty command received, ignoring');
@@ -114,21 +115,45 @@ class TerminalController {
       // Display the command in the terminal
       console.log('[TerminalController] Displaying command in terminal view');
       if (!terminalView) {
-        console.error('[TerminalController] ERROR: terminalView is undefined or null');
+        console.error('[TerminalController] ERROR: terminalView is undefined');
         return;
       }
       terminalView.displayCommand(command);
-      
-      // Process the command
-      console.log('[TerminalController] Executing command via terminalCore');
-      if (!terminalCore) {
-        console.error('[TerminalController] ERROR: terminalCore is undefined or null');
-        return;
+
+      // AUTHENTICATION GATE
+      if (!this.isAuthenticated) {
+        const trimmed = command.trim();
+        const PASSWORD = 'unknown'; // hard-coded gimmick
+        if (trimmed === PASSWORD) {
+          this.isAuthenticated = true;
+          // Hide password greeting to keep space
+          const greetingEl = terminalView.outputElement.querySelector('.welcome-message');
+          if (greetingEl) greetingEl.style.visibility = 'hidden';
+          // Hide existing spacer to avoid double spacing
+          const oldSpacer = terminalView.outputElement.querySelector('.welcome-spacer');
+          if (oldSpacer) oldSpacer.style.visibility = 'hidden';
+          // fancy animated welcome reveal
+          terminalCore.config.greetings = 'Welcome to the abyss. Type _help_ to interact.';
+          await terminalView.fancyAnimateGreeting(terminalCore.getGreeting());
+          await terminalView.displaySuccess('Terminal unlocked.');
+          // switch prompt to anonymous
+          terminalCore.setPrompt('anonymous: ');
+          terminalView.createInputLine(); // Re-create input at same reserved position
+          return;
+        }
+        // wrong password: show error and re-create password prompt line
+        await terminalView.displayError('Incorrect password, try again.');
+        terminalView.createInputLine();
+        return; // block further processing until authenticated
       }
-      terminalCore.executeCommand(command);
-      console.log('[TerminalController] Command sent to terminalCore successfully');
+
+      // Add command to history
+      terminalCore.addToHistory(command);
+
+      // Process the command
+      this.processCommand(command);
     } catch (error) {
-      console.error('[TerminalController] ERROR: Failed to process command:', error);
+      console.error('[TerminalController] ERROR: Failed to handle command submission', error);
     }
   }
 
