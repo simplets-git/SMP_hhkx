@@ -8,6 +8,7 @@
 // Import TextFormatter early to avoid circular dependencies
 import TextFormatter from '../utils/text-formatter.js';
 import factsCommand from './facts.js';
+import { handleAsciiDemo } from './ascii-demo.js';
 import { eventBus } from '../utils/events.js';
 import { COMMAND_EVENTS } from '../core/terminal-events.js';
 
@@ -29,6 +30,12 @@ class CommandRegistry {
     // Register built-in commands
     this.registerCommandWithCategory(factsCommand.name, factsCommand.handler, factsCommand.category);
     this.registerHelpText(factsCommand.name, factsCommand.help);
+    // Register ascii-demo command
+    this.registerCommandWithCategory('ascii-demo', handleAsciiDemo, 'tools');
+    this.registerHelpText('ascii-demo', {
+      help: `<strong>ascii-demo</strong><br>Plays an animated ASCII art demo in the terminal. Usage: <code>ascii-demo</code>`,
+      info: 'Plays a short animated sequence of ASCII art frames in the terminal area.'
+    });
     
     // Setup event listener for command registration
     eventBus.on(COMMAND_EVENTS.REGISTER, (data) => {

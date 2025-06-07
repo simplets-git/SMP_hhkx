@@ -22,6 +22,7 @@ class TerminalView {
     
     // State
     this.initialized = false;
+    this.isAttemptingSelection = false; // Flag to track if user is selecting text with mouse
 
     // Animation delays
     this.CHARACTER_ANIMATION_DELAY_MS = 0;    // Set to 0 for instant line reveal
@@ -218,10 +219,17 @@ class TerminalView {
       this.inputElement.addEventListener('blur', () => {
         // Use a minimal timeout to avoid potential conflicts and allow browser to process other events
         setTimeout(() => {
-          if (this.inputElement) { // Check if element still exists
-            this.inputElement.focus();
-          }
-        }, 0);
+        const selection = window.getSelection();
+        // A meaningful selection exists if it's a 'Range' type and has content.
+        const hasActiveSelection = selection && selection.type === 'Range' && selection.toString() !== '';
+
+        if (this.inputElement &&
+            !this.isAttemptingSelection && // Check if mouse button is up (selection attempt finished or wasn't a drag)
+            !hasActiveSelection &&          // Check if no meaningful text selection exists
+            document.hasFocus()) {          // Check if the page/tab is still active
+          this.inputElement.focus();
+        }
+      }, 100); // Ensure sufficient delay for selection state to be finalized
       });
     }
   }
@@ -272,20 +280,44 @@ class TerminalView {
       }
     });
     
+    // Track mouse state to help with selection vs. input focusing logic
+    if (this.terminalElement) {
+      this.terminalElement.addEventListener('mousedown', (event) => {
+        // If mousedown is not on the input element itself, it might be a selection attempt.
+        if (event.target !== this.inputElement) {
+          this.isAttemptingSelection = true;
+        }
+      });
+    }
+    window.addEventListener('mouseup', () => {
+      // Update synchronously when mouse button is released.
+      this.isAttemptingSelection = false;
+    });
+
     // Add a click listener to the terminal element to refocus the input
     if (this.terminalElement) {
       this.terminalElement.addEventListener('click', (event) => {
-        // Only focus if an input element exists,
-        // the click target is not the input element itself,
-        // the input element is not already focused,
-        // and no text is currently selected in the window.
-        if (this.inputElement &&
-            event.target !== this.inputElement &&
-            document.activeElement !== this.inputElement &&
-            window.getSelection().toString() === '') {
-          this.inputElement.focus();
+      if (this.inputElement &&
+          event.target !== this.inputElement &&
+          document.activeElement !== this.inputElement) {
+
+        // For single clicks (event.detail === 1), attempt to focus input if no selection occurs.
+        // For multi-clicks (event.detail > 1), do nothing to allow default browser selection.
+        if (event.detail === 1) {
+          requestAnimationFrame(() => {
+            // After the browser has had a chance to process the click (and potential selection initiation):
+            if (this.inputElement && // Re-check existence
+                document.activeElement !== this.inputElement && // Re-check focus
+                window.getSelection().toString() === '' && // No text selected
+                !this.isAttemptingSelection) { // Not in the middle of a drag selection
+              this.inputElement.focus();
+            }
+          });
         }
-      });
+        // If event.detail > 1 (double/triple click), we explicitly do nothing here,
+        // allowing the browser to handle text selection.
+      }
+    });
     }
 
     // Handle terminal interactions with better text selection support
