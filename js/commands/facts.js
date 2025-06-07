@@ -24,7 +24,7 @@ export default {
       [facts[i], facts[j]] = [facts[j], facts[i]];
     }
     return {
-      text: `these simple facts are our manifesto:\n\n${facts.join('\n')}`,
+      text: `these simple facts are our manifesto:\n${facts.join('\n')}`,
       className: 'terminal-facts'
     };
   }
