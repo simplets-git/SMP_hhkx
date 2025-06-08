@@ -33,7 +33,7 @@ class CursorManager {
       this.blinkInterval = null;
     }
 
-    this.inputElement = inputElement;
+    this.inputElement = inputElement; // This line was part of the original block after 'Clean up any previous state'
     
     // Ensure we start with a clean input value (no cursor characters)
     if (this.inputElement.value.includes(this.cursorChar)) {

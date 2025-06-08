@@ -49,6 +49,7 @@ class Terminal {
       this.core.config.greetings = 'Please enter the password:';
       this.core.setPrompt('Password: ');
       this.view.initialize(); 
+  
       
       // After view init, wait for input element before finishing setup
       const finishInit = () => {

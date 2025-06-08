@@ -76,6 +76,69 @@ function onYouTubePlayerStateChange(event) {
     // }
 }
 
+// Function to stop all players
+function stopAllPlayers() {
+    if (soundcloudWidget && typeof soundcloudWidget.pause === 'function') {
+        soundcloudWidget.pause();
+    }
+    if (youtubePlayer && typeof youtubePlayer.stopVideo === 'function') {
+        youtubePlayer.stopVideo();
+    }
+    console.log("Attempted to stop all players.");
+}
+
+// Function to load and switch tracks
+function loadTrack(track, shouldPlayImmediately = true) { // track is an object, shouldPlayImmediately defaults to true
+    stopAllPlayers(); // Force stop any playing audio first
+
+    const url = track.url;
+    const title = track.title;
+    const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+    const isSoundCloud = url.includes('soundcloud.com');
+
+    updateSongInfo(title, url); // Update display with provided title and URL immediately
+
+    if (isYouTube) {
+        activePlayer = 'youtube';
+        const videoId = extractVideoID(url);
+        if (videoId && youtubePlayer && typeof youtubePlayer.loadVideoById === 'function') {
+            youtubePlayer.loadVideoById(videoId);
+            if (shouldPlayImmediately && typeof youtubePlayer.playVideo === 'function') {
+                youtubePlayer.playVideo();
+            }
+        } else if (!videoId) {
+            console.error('Could not extract YouTube video ID from URL:', url);
+            updateSongInfo('Invalid YouTube URL', url);
+        } else {
+            console.error('YouTube Player not ready or loadVideoById not available.');
+        }
+    } else if (isSoundCloud) {
+        activePlayer = 'soundcloud';
+        if (soundcloudWidget && soundcloudWidget.load) {
+            soundcloudWidget.load(url, {
+                auto_play: false,
+                callback: function() {
+                    console.log('SoundCloud track loaded:', track.title);
+                    if (track.startTime && typeof track.startTime === 'number' && track.startTime > 0) {
+                        console.log('Seeking to ' + track.startTime + 's');
+                        soundcloudWidget.seekTo(track.startTime * 1000);
+                    }
+                    if (typeof soundcloudWidget.play === 'function') {
+                        soundcloudWidget.play();
+                    }
+                }
+            });
+        } else {
+            console.error('SoundCloud Widget not ready or invalid URL.');
+            updateSongInfo('Error loading song', url);
+        }
+    } else {
+        console.error('Unsupported track URL:', url);
+        terminal.write({ text: "Unsupported track URL.", className: "terminal-error" });
+        terminalView.createInputLine();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const soundcloudPlayerIframe = document.getElementById('soundcloud-player');
     const youtubePlayerIframe = document.getElementById('youtube-player');
@@ -107,74 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // We might still want to show/hide based on play/pause if desired, but title fetching is removed.
         // songInfo.style.display = 'block'; // Already handled
     });
-
-    // Function to stop all players
-    function stopAllPlayers() {
-        if (soundcloudWidget && typeof soundcloudWidget.pause === 'function') {
-            soundcloudWidget.pause();
-        }
-        if (youtubePlayer && typeof youtubePlayer.stopVideo === 'function') {
-            youtubePlayer.stopVideo();
-        }
-        console.log("Attempted to stop all players.");
-    }
-
-    // Function to load and switch tracks
-    function loadTrack(track, shouldPlayImmediately = true) { // track is an object, shouldPlayImmediately defaults to true
-        stopAllPlayers(); // Force stop any playing audio first
-
-        const url = track.url;
-        const title = track.title;
-        const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
-        const isSoundCloud = url.includes('soundcloud.com');
-
-        updateSongInfo(title, url); // Update display with provided title and URL immediately
-
-        if (isYouTube) {
-            // youtubePlayerIframe.style.display = 'block'; // Keep hidden
-            activePlayer = 'youtube';
-            const videoId = extractVideoID(url);
-            if (videoId && youtubePlayer && typeof youtubePlayer.loadVideoById === 'function') {
-                youtubePlayer.loadVideoById(videoId); // Cue the video
-                if (shouldPlayImmediately && typeof youtubePlayer.playVideo === 'function') { // Check if playVideo method exists and should play
-                    youtubePlayer.playVideo(); // Attempt to play the video if requested
-                }
-            } else if (!videoId) {
-                console.error('Could not extract YouTube video ID from URL:', url);
-                updateSongInfo('Invalid YouTube URL', url); // Update with error
-            } else {
-                console.error('YouTube Player not ready or loadVideoById not available.');
-            }
-        } else if (isSoundCloud) {
-            // youtubePlayerIframe.style.display = 'none'; // Already hidden by default
-            // soundcloudPlayerIframe.style.display = 'block'; // Keep hidden
-            activePlayer = 'soundcloud';
-            if (soundcloudWidget && soundcloudWidget.load) {
-                soundcloudWidget.load(url, {
-                    auto_play: false, // Set to false to allow seek before play
-                    callback: function() {
-                        console.log('SoundCloud track loaded:', track.title);
-                        if (track.startTime && typeof track.startTime === 'number' && track.startTime > 0) {
-                            console.log('Seeking to ' + track.startTime + 's');
-                            soundcloudWidget.seekTo(track.startTime * 1000);
-                        }
-                        // After potential seek, play the track
-                        if (typeof soundcloudWidget.play === 'function') {
-                            soundcloudWidget.play();
-                        }
-                    }
-                });
-            } else {
-                console.error('SoundCloud Widget not ready or invalid URL.');
-                updateSongInfo('Error loading song', url); // Update with error
-            }
-        } else {
-            console.error('Unsupported track URL:', url);
-            terminal.write({ text: "Unsupported track URL.", className: "terminal-error" });
-            terminalView.createInputLine();
-        }
-    }
-
     // Helper functions for playlist navigation
     function playNextTrack() {
         currentTrackIndex = (currentTrackIndex + 1) % playlist.length;

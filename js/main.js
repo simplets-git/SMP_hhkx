@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set version display
   const versionDiv = document.getElementById('version-display');
   if (versionDiv) {
-    versionDiv.textContent = `v.${CONFIG.version}`;
+    versionDiv.textContent = `${CONFIG.version}`;
   }
   
   // Set up side button event listeners

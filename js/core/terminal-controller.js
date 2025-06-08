@@ -141,6 +141,7 @@ class TerminalController {
           // switch prompt to anonymous
           terminalCore.setPrompt('anonymous: ');
           terminalView.createInputLine(); // Re-create input at same reserved position
+  
           return;
         }
         // wrong password: show error and re-create password prompt line

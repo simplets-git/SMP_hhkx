@@ -179,6 +179,8 @@ class TerminalView {
     }
   }
 
+
+
   /**
    * Create the input line with prompt and input field
    * Only one input line should exist at a time.
