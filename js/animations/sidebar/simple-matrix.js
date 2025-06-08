@@ -159,7 +159,7 @@ class SimpleMatrixGrid {
         } else {
             columnCount = Math.max(1, Math.floor(width / CONFIG.CHAR_WIDTH));
         }
-        const rowCount = Math.max(1, Math.floor(height / CONFIG.CELL_HEIGHT));
+        const rowCount = Math.max(1, Math.ceil(height / CONFIG.CELL_HEIGHT));
         return { columnCount, rowCount, width, height };
     }
 
@@ -509,12 +509,15 @@ const SimpleMatrixAnimation = {
             sideBox.className = `terminal-side-box terminal-side-box-${side}`; // Reuse old class for basic structure
             
             // Basic positioning (can be refined by CSS)
-            sideBox.style.position = 'absolute';
-            sideBox.style.top = '0';
-            sideBox.style.bottom = '0';
-            sideBox.style.width = '300px'; // Initial, will be resized
-            sideBox.style.overflow = 'hidden';
-             sideBox.style.backgroundColor = 'var(--bg-color)'; // Match terminal background
+
+// Basic positioning (can be refined by CSS)
+sideBox.style.position = 'absolute';
+sideBox.style.top = '0';
+sideBox.style.bottom = '0';
+sideBox.style.width = '300px'; // Initial, will be resized
+sideBox.style.overflow = 'hidden';
+sideBox.style.backgroundColor = 'var(--bg-color)'; // Match terminal background
+sideBox.style.height = '100%'; // Explicitly set height
 
             if (side === 'left') {
                 sideBox.style.left = '0';

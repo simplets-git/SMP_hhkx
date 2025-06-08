@@ -18,6 +18,9 @@ export default {
 SIMPLETS is the cult of digital awakening:
 An experimental DeSoc journey where A.I. and analog souls unite.
 Built on codes, from character to character.
+
+
+
 `,
 
     minting: `

@@ -12,6 +12,20 @@ import { handleAsciiDemo } from './ascii-demo.js';
 import { eventBus } from '../utils/events.js';
 import { COMMAND_EVENTS } from '../core/terminal-events.js';
 
+// Handler for the 'winamp' command
+async function handleWinampCommand(args, terminalController) {
+    if (window.musicPlayer && typeof window.musicPlayer.toggleVisibility === 'function') {
+        const isVisible = window.musicPlayer.toggleVisibility();
+        if (isVisible) {
+            return "Winamp player shown.";
+        } else {
+            return "Winamp player hidden.";
+        }
+    } else {
+        return "Error: Music player module not available or toggleVisibility function missing.";
+    }
+}
+
 // Create the helpTexts object that will be populated
 const helpTexts = {};
 
@@ -24,6 +38,7 @@ class CommandRegistry {
       'core': [],
       'info': [],
       'tools': [],
+      'media': [], // Added media category
       'other': []
     };
 
@@ -36,6 +51,14 @@ class CommandRegistry {
       help: `<strong>ascii-demo</strong><br>Plays an animated ASCII art demo in the terminal. Usage: <code>ascii-demo</code>`,
       info: 'Plays a short animated sequence of ASCII art frames in the terminal area.'
     });
+
+    // Register winamp command
+    const winampHelp = {
+      help: "<strong>winamp</strong><br>Toggles the visibility of the music player.",
+      info: "Shows or hides the music player interface. Use this command to access or dismiss the music controls."
+    };
+    this.registerCommandWithCategory('winamp', handleWinampCommand, 'media');
+    this.registerHelpText('winamp', winampHelp);
     
     // Setup event listener for command registration
     eventBus.on(COMMAND_EVENTS.REGISTER, (data) => {
