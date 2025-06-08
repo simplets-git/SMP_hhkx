@@ -6,7 +6,8 @@
   "scripts": {
     "start": "python3 start_server.py",
     "dev": "python3 start_server.py",
-    "stop": "pkill -f 'python3 start_server.py' || echo 'Server not running'"
+    "stop": "pkill -f 'python3 start_server.py' || echo 'Server not running'",
+    "build": "rm -rf build && mkdir build && cp index.html build/ && cp -R css build/ && cp -R js build/ && cp -R assets build/ && cp -R video build/"
   },
   "author": "SIMPLETS Team",
   "license": "UNLICENSED",
