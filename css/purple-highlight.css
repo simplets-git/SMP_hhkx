@@ -11,31 +11,31 @@
 
 /* Global selection styles */
 ::selection {
-  background-color: var(--highlight-bg) !important;
-  color: var(--highlight-text) !important;
-  -webkit-text-fill-color: var(--highlight-text) !important;
-  text-shadow: none !important;
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text);
+  -webkit-text-fill-color: var(--highlight-text);
+  text-shadow: none;
 }
 
 ::-moz-selection {
-  background-color: var(--highlight-bg) !important;
-  color: var(--highlight-text) !important;
-  -webkit-text-fill-color: var(--highlight-text) !important;
-  text-shadow: none !important;
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text);
+  -webkit-text-fill-color: var(--highlight-text);
+  text-shadow: none;
 }
 
 /* Terminal-specific selection - using a more efficient selector pattern */
 /* This targets all elements within the terminal container */
 #terminal *::selection {
-  background-color: var(--highlight-bg) !important;
-  color: var(--highlight-text) !important;
-  -webkit-text-fill-color: var(--highlight-text) !important;
-  text-shadow: none !important;
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text);
+  -webkit-text-fill-color: var(--highlight-text);
+  text-shadow: none;
 }
 
 #terminal *::-moz-selection {
-  background-color: var(--highlight-bg) !important;
-  color: var(--highlight-text) !important;
-  -webkit-text-fill-color: var(--highlight-text) !important;
-  text-shadow: none !important;
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text);
+  -webkit-text-fill-color: var(--highlight-text);
+  text-shadow: none;
 }

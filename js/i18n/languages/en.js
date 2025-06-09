@@ -80,17 +80,39 @@ bounty program: (wallet address)
     team: `
 
     `,
-    project: {
-      title: "SIMPLETS PROJECT",
-      description1: "SIMPLETS is a multichain web3 brand.",
-      description2: "A pseudonym supportive community aiming to boost pseudonym contributors in web3 space.",
-      description3: "A web3 brand empowering pseudonymous contributors, building a supportive community at the intersection of identity and innovation.",
-      nftExamples: "Random Character Pair NFT Examples:",
-      uniqueImages: "Every image is unique. Theme switch = new art!",
-      ecosystem: "SIMPLETS is building a comprehensive ecosystem for pseudonymous contributors.",
-      community: "Join our community to access exclusive NFT drops, events, and collaboration opportunities.",
-      stayTuned: "Stay tuned for more updates on our roadmap and upcoming features!"
-    },
+    project: `
+<div class="project-command-container">
+  <h3>SIMPLETS PROJECT</h3>
+
+  <p>SIMPLETS is a multichain web3 brand.</p>
+
+  <p>A pseudonym supportive community aiming to boost pseudonym contributors in web3 space. A web3 brand empowering pseudonymous contributors, building a supportive community at the intersection of identity and innovation.</p>
+
+  <h4>Random Character Pair NFT Examples:</h4>
+  
+  <div class="svg-section" style="text-align: center; margin-bottom: 20px;">
+    <!-- SVG Placeholder 1 -->
+    {{SVG_PLACEHOLDER_1}}
+    <!-- SVG Placeholder 2 -->
+    {{SVG_PLACEHOLDER_2}}
+  </div>
+  
+  <p><em>Every image is unique. Theme switch = new art!</em></p>
+
+  <p>SIMPLETS is building a comprehensive ecosystem for pseudonymous contributors.</p>
+
+  <div class="svg-section" style="text-align: center; margin-bottom: 20px;">
+    <!-- SVG Placeholder 1 -->
+    {{SVG_PLACEHOLDER_1}}
+    <!-- SVG Placeholder 2 -->
+    {{SVG_PLACEHOLDER_2}}
+  </div>
+
+  <p>Join our community to access exclusive NFT drops, events, and collaboration opportunities.</p>
+
+  <p>Stay tuned for more updates on our roadmap and upcoming features!</p>
+</div>
+    `,
     links: `
 <strong>SIMPLETS Links</strong><br>
 <span class="terminal-styled-text">

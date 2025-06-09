@@ -48,6 +48,13 @@ window.onYouTubeIframeAPIReady = () => {
     const youtubeIframe = document.getElementById('youtube-player');
     if (youtubeIframe) {
         youtubePlayer = new YT.Player('youtube-player', {
+            playerVars: {
+                'autoplay': 0,          // Explicitly disable autoplay
+                'controls': 0,          // Hide YouTube's default controls (if using custom)
+                'showinfo': 0,          // Hide video title, uploader (optional)
+                'rel': 0,               // Do not show related videos when playback ends (optional)
+                'origin': window.location.origin // Important for security and some API functionalities
+            },
             events: {
                 'onReady': onYouTubePlayerReady,
                 'onStateChange': onYouTubePlayerStateChange

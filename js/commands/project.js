@@ -15,68 +15,32 @@ function handleProjectCommand() {
   console.log('[PROJECT] Starting project command execution');
   
   // Clean up any orphaned project elements from previous executions
-  cleanupPreviousProjectElements();
+  // This might need review/simplification later if it causes issues with the new HTML structure
+  cleanupPreviousProjectElements(); 
   
   // Generate random character pairs using the SVG utility
   const charPair1 = SVGUtils.getRandomCharPair();
   const charPair2 = SVGUtils.getRandomCharPair();
+  const svg1 = SVGUtils.generateCircleSVG(charPair1);
+  const svg2 = SVGUtils.generateCircleSVG(charPair2);
   
   console.log('[PROJECT] Generated character pairs:', charPair1, charPair2);
 
-  // Generate a unique ID for this command instance
-  const instanceId = `project-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-  console.log('[PROJECT] Created instance ID:', instanceId);
+  // Get the HTML template from i18n
+  // Assumes 'commands.project' is the key for the single HTML string in en.js
+  let htmlTemplate = i18n.t('commands.project');
 
-  // Create content with a more predictable structure for proper positioning
-  return [
-    // Part 1: Introduction - Using i18n for text content
-    i18n.t('commands.project.title'),
-    "",
-    i18n.t('commands.project.description1'),
-    "",
-    i18n.t('commands.project.description2'),
-    "",
-    i18n.t('commands.project.description3'),
-    "",
-    i18n.t('commands.project.nftExamples'),
-    
-    // SVGs - simplified container with CSS classes for theme-aware styling
-    {
-      type: 'html',
-      html: `
-        <div id="${instanceId}" class="project-svg-container">
-          <div class="project-svg-wrapper">
-            ${SVGUtils.generateCircleSVG(charPair1)}
-          </div>
-          <div class="project-svg-wrapper">
-            ${SVGUtils.generateCircleSVG(charPair2)}
-          </div>
-        </div>
-        <div class="project-clear-spacer"></div>
-      `,
-      className: 'project-svg-block'
-    },
-    
-    
-    // Part 2: Additional info - add a bit more spacing after SVGs
-    "",
-    i18n.t('commands.project.uniqueImages'),
-    "",
-    i18n.t('commands.project.ecosystem'),
-    "",
-    i18n.t('commands.project.community'),
-    "",
-    // Add final spacer to ensure separation from next command
-    {
-      type: 'html_block',
-      message: `
-        <div id="${instanceId}-end-spacer" class="project-final-spacer"></div>
-      `,
-      className: 'project-final-spacer'
-    },
-    "",
-    i18n.t('commands.project.stayTuned')
-  ];
+  // Replace placeholders with actual SVGs, wrapped in a div for consistent styling if needed
+  htmlTemplate = htmlTemplate.replace('{{SVG_PLACEHOLDER_1}}', `<div class="project-svg-wrapper">${svg1}</div>`);
+  htmlTemplate = htmlTemplate.replace('{{SVG_PLACEHOLDER_2}}', `<div class="project-svg-wrapper">${svg2}</div>`);
+  
+  // Return the complete HTML content to be rendered
+  // The terminal rendering logic should handle an object of type 'html' by setting innerHTML
+  return [{
+    type: 'html', // Or 'html_block' depending on how your terminal handles these types
+    html: htmlTemplate,
+    // className: 'project-output' // Optional: for overall styling of the project command output
+  }];
 }
 
 /**

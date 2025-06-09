@@ -5,7 +5,6 @@
  */
 
 // Import CSS
-// import '../css/main.css'; // Loaded via HTML
 
 // Import core modules
 import Terminal from './core/terminal.js';

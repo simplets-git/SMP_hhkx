@@ -72,21 +72,21 @@
 
 /* Dedicated SVG block for project command */
 .project-svg-block {
-  height: auto !important;
-  line-height: normal !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  position: relative !important;
-  margin: 5px 0 15px 0 !important; /* Increased bottom margin for spacing */
-  padding: 0 !important;
-  width: 100% !important;
-  display: block !important;
-  clear: both !important;
-  z-index: 10 !important; /* Ensure proper stacking */
+  height: auto;
+  line-height: normal;
+  white-space: normal;
+  overflow: visible;
+  position: relative;
+  margin: 5px 0 15px 0; /* Increased bottom margin for spacing */
+  padding: 0;
+  width: 100%;
+  display: block;
+  clear: both;
+  z-index: 10; /* Ensure proper stacking */
   /* Add isolation to prevent overlapping */
-  isolation: isolate !important;
+  isolation: isolate;
   /* Force a new stacking context */
-  transform: translateZ(0) !important;
+  transform: translateZ(0);
 }
 
 /* Project SVG container */
@@ -125,10 +125,6 @@
   transition: transform 0.3s ease;
 }
 
-.project-circle-svg:hover {
-  transform: scale(1.05);
-}
-
 /* Theme-aware circle fill */
 .project-circle {
   fill: var(--svg-bg-color);
@@ -150,34 +146,34 @@
 
 /* Clear spacer to prevent overlaps */
 .project-clear-spacer {
-  display: block !important;
-  width: 100% !important;
-  height: 40px !important; /* Increased height for better separation */
-  clear: both !important;
-  position: relative !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  visibility: visible !important;
-  z-index: 1 !important;
+  display: block;
+  width: 100%;
+  height: 40px; /* Increased height for better separation */
+  clear: both;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  visibility: visible;
+  z-index: 1;
   /* Force a new stacking context */
-  transform: translateZ(0) !important;
+  transform: translateZ(0);
 }
 
 /* Final spacer for complete command isolation */
 .project-final-spacer {
-  display: block !important;
-  width: 100% !important;
-  height: 20px !important;
-  clear: both !important;
-  position: relative !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  visibility: visible !important;
-  z-index: 1 !important;
+  display: block;
+  width: 100%;
+  height: 20px;
+  clear: both;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  visibility: visible;
+  z-index: 1;
   /* Force a new stacking context */
-  transform: translateZ(0) !important;
+  transform: translateZ(0);
 }
 
 /* Spacer for vertical rhythm */

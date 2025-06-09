@@ -80,9 +80,6 @@ html.light-theme {
   --heading-color: #121212;
   --emphasis-color: #202020;
   
-  /* Selection Colors (now controlled by custom-terminal.css for light theme) */
-  /* --selection-bg-color: #8A00FF; */ /* Purple */
-  /* --selection-text-color: #FFFFFF; */
   
   /* Links */
   --link-color: #1565c0;
