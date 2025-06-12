@@ -19,6 +19,11 @@ Thumbs.db
 # Local development
 .local
 
+# Audio files
+*.m4a
+*.mp3
+*.wav
+
 # Dependencies
 node_modules/
 npm-debug.log*
