@@ -115,13 +115,12 @@
 }
 
 /* SVG circle element */
-.project-circle-svg {
+.project-svg-wrapper img.theme-svg {
   display: block;
   width: 180px;
   height: 180px;
   border-radius: 50%;
   overflow: hidden;
-  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); */ /* Removed shadow */
   transition: transform 0.3s ease;
 }
 
@@ -217,8 +216,7 @@
   }
   
   .project-svg-wrapper img {
-    height: 120px;
-    width: 120px;
+    /* The height and width are now controlled by the SVG attributes to ensure consistent rendering */
   }
   
   .project-spacer {

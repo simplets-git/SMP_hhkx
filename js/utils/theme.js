@@ -31,7 +31,8 @@ const ThemeUtils = {
       
       try {
         // Generate new SVG with the correct theme
-        const svg = SVGUtils.generateRandomCharacterPairSVG(bgColor, indices);
+                const pair = SVGUtils.getRandomCharPair(indices);
+        const svg = SVGUtils.generateCircleSVG(pair, bgColor);
         if (svg) {
           img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
         }

@@ -46,17 +46,13 @@ const SVGUtils = {
     }
     
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           width="180" 
-           height="180" 
-           viewBox="0 0 180 180"
-           class="project-circle-svg">
+      <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" class="project-circle-svg">
         <circle cx="90" cy="90" r="90" class="project-circle" />
         <text x="90" 
               y="90" 
               dominant-baseline="central"
               font-family="var(--font-mono)" 
-              font-size="48"
+              style="font-size: 76.8px;"
               text-anchor="middle" 
               class="project-circle-text">
           ${chars[0]}_${chars[1]}

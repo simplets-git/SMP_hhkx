@@ -82,35 +82,36 @@ bounty program: (wallet address)
     `,
     project: `
 <div class="project-command-container">
-  <h3>SIMPLETS PROJECT</h3>
 
-  <p>SIMPLETS is a multichain web3 brand.</p>
+  <p>Project
+In a world of overdesigned avatars, where creators often exploit the emotional appeal of cuteness to trigger protective instincts and build parasocial bonds with their audience, SIMPLETS choose a different path.
+Using one of the oldest mediums from the digital era of human history: characters.
+Characters we interact with every day.
+Characters that shape our intentions into simple codes or complex systems.
+Characters that, when organized into units and tokenized, enable the connection between humans and artificial intelligence.
+Characters that in digital culture often convey not just letters or punctuation, but frequently emotions.
 
-  <p>A pseudonym supportive community aiming to boost pseudonym contributors in web3 space. A web3 brand empowering pseudonymous contributors, building a supportive community at the intersection of identity and innovation.</p>
-
-  <h4>Random Character Pair NFT Examples:</h4>
+Characters.
+Formed into unique pairs, separated by an underscore.
+</p>
   
-  <div class="svg-section" style="text-align: center; margin-bottom: 20px;">
-    <!-- SVG Placeholder 1 -->
-    {{SVG_PLACEHOLDER_1}}
-    <!-- SVG Placeholder 2 -->
-    {{SVG_PLACEHOLDER_2}}
+  <div class="project-svg-container">
+    <div class="project-svg-wrapper">
+      {{SVG_PLACEHOLDER_1}}
+    </div>
+    <div class="project-svg-wrapper">
+      {{SVG_PLACEHOLDER_2}}
+    </div>
   </div>
-  
-  <p><em>Every image is unique. Theme switch = new art!</em></p>
+  <p>Press N to generate new pairs</p>
 
-  <p>SIMPLETS is building a comprehensive ecosystem for pseudonymous contributors.</p>
+  <p>Don't let others mislead you.
+This is not art.
+This is not smart.
+This is not unique.
+This is not minimal.
 
-  <div class="svg-section" style="text-align: center; margin-bottom: 20px;">
-    <!-- SVG Placeholder 1 -->
-    {{SVG_PLACEHOLDER_1}}
-    <!-- SVG Placeholder 2 -->
-    {{SVG_PLACEHOLDER_2}}
-  </div>
-
-  <p>Join our community to access exclusive NFT drops, events, and collaboration opportunities.</p>
-
-  <p>Stay tuned for more updates on our roadmap and upcoming features!</p>
+It's just Punk</p>
 </div>
     `,
     links: `
