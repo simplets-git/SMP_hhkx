@@ -15,23 +15,25 @@ export default {
   // Command responses
   commands: {
     about: `
+    </pre>   
+
 SIMPLETS is the cult of digital awakening:
-An experimental DeSoc journey where A.I. and analog souls unite.
+An inclusive decentralized community where A.I. and analog souls unite.
 Built on codes, from character to character.
 
-
-
+</pre>   
 `,
 
-    minting: `
-<strong>SIMPLETS Minting</strong><br>
-- <span class="terminal-command">total supply</span>: 10,000 unique terminal interfaces<br>
-- <span class="terminal-command">mint price</span>: 0.069 ETH<br>
-- <span class="terminal-command">blockchain</span>: Ethereum<br>
-- <span class="terminal-command">smart contract</span>: In development<br>
-- <span class="terminal-command">whitelist</span>: Coming soon<br>
+    minting: `<pre style="margin:0; line-height:1.35;">
+<strong>SIMPLETS Minting</strong>
+- total supply: 10,000 unique terminal interfaces
+- mint price: 0.069 ETH
+- blockchain: Ethereum
+- smart contract: In development
+- whitelist: Coming soon
+
 Minting will grant exclusive access to advanced terminal features.
-    `,
+</pre>`,
     roadmap: `<pre style="margin:0; line-height:1.35;">
 
 SIMPLETS don't predict the future; they code it. 
@@ -80,40 +82,34 @@ bounty program: (wallet address)
     team: `
 
     `,
-    project: `
-<div class="project-command-container">
-
-  <p>Project
-In a world of overdesigned avatars, where creators often exploit the emotional appeal of cuteness to trigger protective instincts and build parasocial bonds with their audience, SIMPLETS choose a different path.
-Using one of the oldest mediums from the digital era of human history: characters.
-Characters we interact with every day.
-Characters that shape our intentions into simple codes or complex systems.
-Characters that, when organized into units and tokenized, enable the connection between humans and artificial intelligence.
-Characters that in digital culture often convey not just letters or punctuation, but frequently emotions.
-
-Characters.
-Formed into unique pairs, separated by an underscore.
-</p>
-  
-  <div class="project-svg-container">
-    <div class="project-svg-wrapper">
-      {{SVG_PLACEHOLDER_1}}
-    </div>
-    <div class="project-svg-wrapper">
-      {{SVG_PLACEHOLDER_2}}
-    </div>
+    project: [
+      `In a world of overdesigned avatars, where creators often exploit the emotional appeal of cuteness to trigger protective instincts and build parasocial bonds with their audience, SIMPLETS choose a different path.`,
+      `Using one of the oldest mediums from the digital era of human history: characters`,
+      `Characters we interact with every day.`,
+      `Characters that shape our intentions into simple codes or complex systems.`,
+      `Characters that, when organized into units and tokenized, enable the connection between humans and artificial intelligence.`,
+      `Characters that in digital culture often convey not just letters or punctuation, but frequently emotions.`,
+      `Characters.`,
+      `Formed into unique pairs, separated by an underscore.`,
+      {
+        type: 'svg_block',
+        html: `<div class="project-svg-container">
+  <div class="project-svg-wrapper">
+    {{SVG_PLACEHOLDER_1}}
   </div>
-  <p>Press N to generate new pairs</p>
-
-  <p>Don't let others mislead you.
-This is not art.
-This is not smart.
-This is not unique.
-This is not minimal.
-
-It's just Punk</p>
-</div>
-    `,
+  <div class="project-svg-wrapper">
+    {{SVG_PLACEHOLDER_2}}
+  </div>
+</div>`
+      },
+      `<p>Press Ctrl+Enter or Cmd+Enter to generate new pairs</p>`,
+      `Don't let others mislead you.`,
+      `This is not art.`,
+      `This is not smart.`,
+      `This is not unique.`,
+      `This is not minimal.`,
+      `It's just Punk. In its purest form.`
+    ],
     links: `
 <strong>SIMPLETS Links</strong><br>
 <span class="terminal-styled-text">

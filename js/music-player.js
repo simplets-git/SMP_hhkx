@@ -4,19 +4,45 @@ import terminalView from './core/terminal-view.js';
 
 let soundcloudWidget;
 let youtubePlayer;
-let activePlayer = null; // Can be 'soundcloud' or 'youtube'
+let audioPlayer = null; // For local audio files
+let activePlayer = null; // Can be 'soundcloud', 'youtube', or 'local'
 let currentVolume = 50; // Shared volume state
 
 const playlist = [
     // --- START: EDIT YOUR PLAYLIST HERE ---
-    // Add your songs in this format: { url: 'SONG_URL', title: 'SONG_TITLE' }
-    { url: 'https://www.youtube.com/watch?v=iG6M-vt-4JY', title: '[ASMR] Cathode terminal emulator' },
-    { url: 'https://soundcloud.com/leather-and-lace/funami-fm', title: 'Funami FM' },
-    { url: 'https://soundcloud.com/moskalus/premiere-alder-basalt-tripalium-corp', title: 'Alder - Basalt', startTime: 4 },
-    { url: 'https://soundcloud.com/urbanstghetto/dj-freelancer-6666alxsf-remix', title: '6666 - ALXSF Remix' },
-    { url: 'https://www.youtube.com/watch?v=cZkduG3zqE4', title: 'Everybody Worldwide - Two Shell' },
-
-    { url: 'https://www.youtube.com/watch?v=vSK0GYjrZxQ', title: 'After Chez Oim - Voiron' }
+    // Add your songs in this format: { url: 'URL_OR_PATH', title: 'SONG_TITLE', type: 'youtube|soundcloud|local' }
+    { 
+        url: 'https://www.youtube.com/watch?v=iG6M-vt-4JY', 
+        title: '[ASMR] Cathode terminal emulator',
+        type: 'local',
+        localPath: 'assets/audio/ASMR.m4a' 
+    },
+    { 
+        url: 'https://soundcloud.com/leather-and-lace/funami-fm', 
+        title: 'Funami FM',
+        type: 'soundcloud'
+    },
+    { 
+        url: 'https://soundcloud.com/moskalus/premiere-alder-basalt-tripalium-corp', 
+        title: 'Alder - Basalt', 
+        startTime: 4,
+        type: 'soundcloud' 
+    },
+    { 
+        url: 'https://soundcloud.com/urbanstghetto/dj-freelancer-6666alxsf-remix', 
+        title: '6666 - ALXSF Remix',
+        type: 'soundcloud'
+    },
+    { 
+        url: 'https://soundcloud.com/twoshell/everybody-worldwide', 
+        title: 'Everybody Worldwide - Two Shell',
+        type: 'soundcloud'
+    },
+    { 
+        url: 'https://www.youtube.com/watch?v=vSK0GYjrZxQ', 
+        title: 'After Chez Oim - Voiron',
+        type: 'youtube'
+    }
     // --- END: EDIT YOUR PLAYLIST HERE ---
 ];
 let currentTrackIndex = 0; // Start with the first track in the playlist
@@ -88,10 +114,13 @@ function stopAllPlayers() {
     if (soundcloudWidget && typeof soundcloudWidget.pause === 'function') {
         soundcloudWidget.pause();
     }
-    if (youtubePlayer && typeof youtubePlayer.stopVideo === 'function') {
-        youtubePlayer.stopVideo();
+    if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') {
+        youtubePlayer.pauseVideo();
     }
-    console.log("Attempted to stop all players.");
+    if (audioPlayer && typeof audioPlayer.pause === 'function') {
+        audioPlayer.pause();
+    }
+    activePlayer = null;
 }
 
 // Function to load and switch tracks
@@ -100,12 +129,38 @@ function loadTrack(track, shouldPlayImmediately = true) { // track is an object,
 
     const url = track.url;
     const title = track.title;
-    const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
-    const isSoundCloud = url.includes('soundcloud.com');
+    const trackType = track.type || (url.includes('youtube.com') || url.includes('youtu.be') ? 'youtube' : 
+                                  url.includes('soundcloud.com') ? 'soundcloud' : 'local');
 
     updateSongInfo(title, url); // Update display with provided title and URL immediately
 
-    if (isYouTube) {
+    // Handle local audio files
+    if (trackType === 'local') {
+        activePlayer = 'local';
+        
+        // Create audio element if it doesn't exist
+        if (!audioPlayer) {
+            audioPlayer = new Audio();
+            audioPlayer.volume = currentVolume / 100;
+        }
+        
+        // Set the audio source
+        audioPlayer.src = track.localPath || url;
+        
+        // Handle play if needed
+        if (shouldPlayImmediately) {
+            audioPlayer.play().catch(e => {
+                console.error('Error playing local audio:', e);
+                terminal.write({ text: "Error playing local audio file.", className: "terminal-error" });
+                terminalView.createInputLine();
+            });
+        }
+        
+        return;
+    }
+    
+    // Handle YouTube and SoundCloud
+    if (trackType === 'youtube') {
         activePlayer = 'youtube';
         const videoId = extractVideoID(url);
         if (videoId && youtubePlayer && typeof youtubePlayer.loadVideoById === 'function') {
@@ -119,22 +174,25 @@ function loadTrack(track, shouldPlayImmediately = true) { // track is an object,
         } else {
             console.error('YouTube Player not ready or loadVideoById not available.');
         }
-    } else if (isSoundCloud) {
+    } else if (trackType === 'soundcloud') {
         activePlayer = 'soundcloud';
-        if (soundcloudWidget && soundcloudWidget.load) {
+        if (soundcloudWidget) {
             soundcloudWidget.load(url, {
-                auto_play: false,
-                callback: function() {
-                    console.log('SoundCloud track loaded:', track.title);
-                    if (track.startTime && typeof track.startTime === 'number' && track.startTime > 0) {
-                        console.log('Seeking to ' + track.startTime + 's');
-                        soundcloudWidget.seekTo(track.startTime * 1000);
-                    }
-                    if (typeof soundcloudWidget.play === 'function') {
-                        soundcloudWidget.play();
-                    }
-                }
+                auto_play: shouldPlayImmediately,
+                buying: false,
+                download: false,
+                sharing: false,
+                show_artwork: false,
+                show_playcount: false,
+                show_user: false,
+                start_track: 0,
+                single_active: true
             });
+            // SoundCloud Widget API doesn't have a direct way to set volume, so we use CSS to hide the iframe
+            // and control volume through the widget's API if needed
+            if (soundcloudWidget.setVolume) {
+                soundcloudWidget.setVolume(currentVolume);
+            }
         } else {
             console.error('SoundCloud Widget not ready or invalid URL.');
             updateSongInfo('Error loading song', url);
@@ -216,13 +274,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 soundcloudWidget.play();
             }
         } else if (activePlayer === 'youtube' && youtubePlayer) {
-            // For YouTube, the track should have been cued by onYouTubePlayerReady (for initial load)
-            // or by a previous loadTrack call (for next/prev). Just tell it to play.
             if (typeof youtubePlayer.playVideo === 'function') {
                 youtubePlayer.playVideo();
             } else {
                 console.error("Play button: YouTube player or playVideo function not available.");
             }
+        } else if (activePlayer === 'local' && audioPlayer) {
+            audioPlayer.play().catch(e => {
+                console.error('Error playing local audio:', e);
+                terminal.write({ text: "Error playing audio file.", className: "terminal-error" });
+                terminalView.createInputLine();
+            });
         }
     });
 
@@ -236,6 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
             soundcloudWidget.pause();
         } else if (activePlayer === 'youtube') {
             youtubePlayer.pauseVideo();
+        } else if (activePlayer === 'local' && audioPlayer) {
+            audioPlayer.pause();
         }
     });
 
@@ -259,6 +323,8 @@ document.addEventListener('DOMContentLoaded', () => {
             soundcloudWidget.setVolume(currentVolume);
         } else if (activePlayer === 'youtube') {
             youtubePlayer.setVolume(currentVolume);
+        } else if (activePlayer === 'local' && audioPlayer) {
+            audioPlayer.volume = currentVolume / 100;
         }
     });
 
@@ -273,6 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
             soundcloudWidget.setVolume(currentVolume);
         } else if (activePlayer === 'youtube') {
             youtubePlayer.setVolume(currentVolume);
+        } else if (activePlayer === 'local' && audioPlayer) {
+            audioPlayer.volume = currentVolume / 100;
         }
     });
 

@@ -40,21 +40,21 @@ const SVGUtils = {
    * @param {Array<string>} chars - Two characters to display in the circle
    * @returns {string} SVG markup with theme-aware styling
    */
-  generateCircleSVG(chars) {
+  generateCircleSVG(chars, colors = {}) {
     if (!Array.isArray(chars) || chars.length !== 2) {
       chars = this.getRandomCharPair();
     }
+
+    const { bgColor = '#000', textColor = '#FFF' } = colors;
     
     return `
-      <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" class="project-circle-svg">
-        <circle cx="90" cy="90" r="90" class="project-circle" />
+      <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="90" cy="90" r="90" style="fill:${bgColor};" />
         <text x="90" 
               y="90" 
               dominant-baseline="central"
-              font-family="var(--font-mono)" 
-              style="font-size: 76.8px;"
               text-anchor="middle" 
-              class="project-circle-text">
+              style="fill:${textColor};font-family:Arial, sans-serif;font-size:76.8px;font-weight:normal;">
           ${chars[0]}_${chars[1]}
         </text>
       </svg>`;

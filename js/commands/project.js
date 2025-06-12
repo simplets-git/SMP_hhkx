@@ -21,26 +21,38 @@ function handleProjectCommand() {
   // Generate random character pairs using the SVG utility
   const charPair1 = SVGUtils.getRandomCharPair();
   const charPair2 = SVGUtils.getRandomCharPair();
-  const svg1 = SVGUtils.generateCircleSVG(charPair1);
-  const svg2 = SVGUtils.generateCircleSVG(charPair2);
+  // Get computed styles to pass theme colors to the SVG utility
+  const computedStyles = getComputedStyle(document.documentElement);
+  const svgBgColor = computedStyles.getPropertyValue('--svg-bg-color').trim();
+  const svgTextColor = computedStyles.getPropertyValue('--svg-text-color').trim();
+
+  const svg1 = SVGUtils.generateCircleSVG(charPair1, { bgColor: svgBgColor, textColor: svgTextColor });
+  const svg2 = SVGUtils.generateCircleSVG(charPair2, { bgColor: svgBgColor, textColor: svgTextColor });
   
   console.log('[PROJECT] Generated character pairs:', charPair1, charPair2);
 
-  // Get the HTML template from i18n
-  // Assumes 'commands.project' is the key for the single HTML string in en.js
-  let htmlTemplate = i18n.t('commands.project');
+  // Get the content from i18n, which is now an array of strings and objects
+  const projectContent = i18n.t('commands.project');
 
-  // Replace placeholders with actual SVGs, wrapped in a div for consistent styling if needed
-  htmlTemplate = htmlTemplate.replace('{{SVG_PLACEHOLDER_1}}', `<div class="project-svg-wrapper">${svg1}</div>`);
-  htmlTemplate = htmlTemplate.replace('{{SVG_PLACEHOLDER_2}}', `<div class="project-svg-wrapper">${svg2}</div>`);
-  
-  // Return the complete HTML content to be rendered
-  // The terminal rendering logic should handle an object of type 'html' by setting innerHTML
-  return [{
-    type: 'html', // Or 'html_block' depending on how your terminal handles these types
-    html: htmlTemplate,
-    // className: 'project-output' // Optional: for overall styling of the project command output
-  }];
+  // Process the content to replace SVG placeholders and prepare for display
+  const processedContent = projectContent.map(item => {
+    if (typeof item === 'string') {
+      // For text strings, replace placeholders and return as is
+      let text = item;
+      text = text.replace('{{SVG_PLACEHOLDER_1}}', `<div class="project-svg-wrapper">${svg1}</div>`);
+      text = text.replace('{{SVG_PLACEHOLDER_2}}', `<div class="project-svg-wrapper">${svg2}</div>`);
+      return text;
+    } else if (item.type === 'svg_block') {
+      // For SVG blocks, return the HTML directly
+      let svgBlockHtml = item.html;
+      svgBlockHtml = svgBlockHtml.replace('{{SVG_PLACEHOLDER_1}}', svg1);
+      svgBlockHtml = svgBlockHtml.replace('{{SVG_PLACEHOLDER_2}}', svg2);
+      return { type: 'html', html: svgBlockHtml };
+    }
+    return item; // Return other types as is
+  });
+
+  return processedContent;
 }
 
 /**
@@ -107,6 +119,41 @@ eventBus.emit(COMMAND_EVENTS.REGISTER, {
   handler: handleProjectCommand,
   category: 'info',
   hidden: false
+});
+
+// Listen for theme changes to update existing SVGs
+eventBus.on('theme:changed', () => {
+  const computedStyles = getComputedStyle(document.documentElement);
+  const svgBgColor = computedStyles.getPropertyValue('--svg-bg-color').trim();
+  const svgTextColor = computedStyles.getPropertyValue('--svg-text-color').trim();
+
+  document.querySelectorAll('.project-svg-wrapper').forEach(wrapper => {
+    const circle = wrapper.querySelector('circle');
+    const text = wrapper.querySelector('text');
+    if (circle) circle.style.fill = svgBgColor;
+    if (text) text.style.fill = svgTextColor;
+  });
+});
+
+// Listen for SVG regeneration requests
+eventBus.on('terminal:regenerate-svg', () => {
+  console.log('[PROJECT] Regenerating SVGs on request.');
+  const wrappers = document.querySelectorAll('.project-svg-wrapper');
+  
+  if (wrappers.length > 0) {
+    const computedStyles = getComputedStyle(document.documentElement);
+    const svgBgColor = computedStyles.getPropertyValue('--svg-bg-color').trim();
+    const svgTextColor = computedStyles.getPropertyValue('--svg-text-color').trim();
+
+    wrappers.forEach(wrapper => {
+      const newCharPair = SVGUtils.getRandomCharPair();
+      const newSvg = SVGUtils.generateCircleSVG(newCharPair, { bgColor: svgBgColor, textColor: svgTextColor });
+      wrapper.innerHTML = newSvg;
+    });
+    console.log(`[PROJECT] Regenerated ${wrappers.length} SVGs.`);
+  } else {
+    console.log('[PROJECT] No SVGs found to regenerate.');
+  }
 });
 
 export { handleProjectCommand };

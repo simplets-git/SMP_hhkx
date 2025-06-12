@@ -220,14 +220,10 @@ html, body {
 
 /* --- Elements that SHOULD be indented by 35px --- */
 /* General command output */
-#terminal > .terminal-output > div.command-output {
 
-}
 
 /* Error messages - attempting to force indentation */
-html body #terminal > .terminal-output > div.terminal-error {
-  /* padding-left: 35px; */ /* Relying on high specificity - REMOVED */
-}
+
 
 /* Specifically un-indent historical prompt lines */
 #terminal > .terminal-output > div.historical-prompt-line {
@@ -255,7 +251,7 @@ html body #terminal > .terminal-output > div.terminal-error {
   user-select: text;
   font-family: 'Share Tech Mono', monospace; /* Ensure correct font family */
   font-size: 18px; /* Ensure correct font size */
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1;
   /* transition: var(--theme-transition); REMOVED */
   display: inline;
@@ -281,6 +277,27 @@ html body #terminal > .terminal-output > div.terminal-error {
   position: relative; /* From the second rule block */
 }
 
+/* Container for the input field and the fake cursor */
+.input-container {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+/* The fake cursor element that replaces the text-based one */
+.fake-cursor {
+  position: absolute;
+  left: 0; /* Position is updated by JS */
+  bottom: 3px; /* Finely tuned for vertical alignment */
+  width: 9.05px; /* Approx width of one character in 'Share Tech Mono' 18px */
+  height: 2px;
+  background-color: var(--text-color);
+  pointer-events: none; /* Prevent it from interfering with mouse events */
+  display: none; /* Visibility is controlled by JS */
+  z-index: 1;
+}
+
 /* No longer needed - using native cursor */
 
 /* User input styling for selectable command lines */
@@ -290,7 +307,7 @@ html body #terminal > .terminal-output > div.terminal-error {
 
 /* Command styling */
 .terminal-command {
-  font-weight: bold;
+  font-weight: normal;
   padding: 0;
   margin: 0;
   border: none;

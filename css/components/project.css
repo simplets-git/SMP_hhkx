@@ -124,24 +124,7 @@
   transition: transform 0.3s ease;
 }
 
-/* Theme-aware circle fill */
-.project-circle {
-  fill: var(--svg-bg-color);
-}
 
-/* Theme-aware text styling */
-.project-circle-text {
-  fill: var(--svg-text-color);
-  font-weight: bold;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-  cursor: text;
-}
 
 /* Clear spacer to prevent overlaps */
 .project-clear-spacer {
@@ -215,9 +198,7 @@
     display: block;
   }
   
-  .project-svg-wrapper img {
-    /* The height and width are now controlled by the SVG attributes to ensure consistent rendering */
-  }
+
   
   .project-spacer {
     height: 10px;

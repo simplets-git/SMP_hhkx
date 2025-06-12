@@ -157,14 +157,7 @@ class TerminalView {
       // Mark as initialized
       this.initialized = true;
       
-      // Remove loading class from body
-      document.body.classList.remove('loading');
-      
-      // Hide loading screen
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-        loadingScreen.style.display = 'none';
-      }
+
       
       console.log('Terminal view initialized successfully');
       
@@ -186,53 +179,63 @@ class TerminalView {
    * Only one input line should exist at a time.
    */
   createInputLine() {
-    // Remove any existing input line (to avoid multiple active prompts)
+    // Remove any existing input line
     const oldInputLine = this.terminalElement.querySelector('.terminal-input-line');
     if (oldInputLine) {
       oldInputLine.remove();
     }
-    // Create input line
+
+    // Create input line container
     const inputLine = document.createElement('div');
     inputLine.className = 'terminal-input-line';
+
     // Create prompt
     this.promptElement = document.createElement('span');
     this.promptElement.className = 'terminal-prompt';
     this.promptElement.textContent = terminalCore.getPrompt();
     inputLine.appendChild(this.promptElement);
+
+    // Create a wrapper for the input and the fake cursor
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'input-container';
+
     // Create input field
     this.inputElement = document.createElement('input');
     this.inputElement.className = 'terminal-input';
     this.inputElement.type = 'text';
     this.inputElement.autocomplete = 'off';
     this.inputElement.spellcheck = false;
-    inputLine.appendChild(this.inputElement);
-    // Clear the input field's value before initializing the cursor for the new line
+    inputContainer.appendChild(this.inputElement);
+
+    // Create the fake cursor element
+    const fakeCursor = document.createElement('span');
+    fakeCursor.className = 'fake-cursor';
+    inputContainer.appendChild(fakeCursor);
+    
+    inputLine.appendChild(inputContainer);
+
+    // Add listener for Ctrl+Enter or Cmd+Enter to regenerate SVG
+    this.inputElement.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        console.log('SVG regeneration triggered by shortcut.');
+        eventBus.emit('terminal:regenerate-svg');
+      }
+    });
+
+    // Clear the input field's value
     this.inputElement.value = '';
-    // Initialize the CursorManager with the custom underscore cursor
+
+    // Initialize the CursorManager, now with the fake cursor element
     this.cursorManager = new CursorManager();
-    this.cursorManager.initialize(inputLine, this.inputElement);
+    this.cursorManager.initialize(this.inputElement, fakeCursor); // New signature
+    
     this.terminalElement.appendChild(inputLine);
-    // Emit an event to notify that the input element is ready
+    
     eventBus.emit('terminal:input:element:ready', this.inputElement);
-    // Automatically focus the new input element
+    
     if (this.inputElement) {
       this.inputElement.focus();
-      // Add a blur event listener to attempt to refocus if focus is lost
-      this.inputElement.addEventListener('blur', () => {
-        // Use a minimal timeout to avoid potential conflicts and allow browser to process other events
-        setTimeout(() => {
-        const selection = window.getSelection();
-        // A meaningful selection exists if it's a 'Range' type and has content.
-        const hasActiveSelection = selection && selection.type === 'Range' && selection.toString() !== '';
-
-        if (this.inputElement &&
-            !this.isAttemptingSelection && // Check if mouse button is up (selection attempt finished or wasn't a drag)
-            !hasActiveSelection &&          // Check if no meaningful text selection exists
-            document.hasFocus()) {          // Check if the page/tab is still active
-          this.inputElement.focus();
-        }
-      }, 100); // Ensure sufficient delay for selection state to be finalized
-      });
     }
   }
 
@@ -261,108 +264,67 @@ class TerminalView {
     eventBus.on(TERMINAL_EVENTS.ENTRY, (entry) => {
       if (this.inputElement && entry) {
         if (window.simplets && window.simplets.Terminal && window.simplets.Terminal.inputHandler && typeof window.simplets.Terminal.inputHandler.setValue === 'function') {
-          // Use InputHandler's setValue to update the input and trigger necessary events (like CHANGED for cursor update)
           window.simplets.Terminal.inputHandler.setValue(entry.command);
         } else {
-          // Fallback if inputHandler is not available (should not happen in normal operation)
-          console.warn('[TerminalView] InputHandler.setValue not available. Setting input value directly and attempting manual cursor update.');
+          console.warn('[TerminalView] InputHandler.setValue not available. Setting input value directly.');
           this.inputElement.value = entry.command;
         }
       }
     });
-    
-    // Listen for input changes
-    eventBus.on(TERMINAL_EVENTS.CHANGED, (currentValue) => {
-      if (this.cursorManager) {
-        // The current CursorManager (js/core/cursor.js) listens to the native 'input' event
-        // on the input element to update itself. Calling a specific update method here
-        // based on TERMINAL_EVENTS.CHANGED is redundant and the previous method
-        // 'updateCursorPosition' does not exist on the current CursorManager, causing an error.
-        console.log('[TerminalView] TERMINAL_EVENTS.CHANGED received, cursor will update via its own input listener.');
-      }
-    });
-    
-    // Track mouse state to help with selection vs. input focusing logic
+
+    // --- ROBUST CLICK vs. DRAG-SELECT HANDLING ---
+    // This logic reliably distinguishes between a user clicking to focus the input
+    // and dragging to select text, preventing the input from stealing focus during selection.
+    let mouseDownPos = null;
+    const CLICK_THRESHOLD = 5; // Max pixels moved to be considered a click.
+
     if (this.terminalElement) {
+      // 1. On mousedown, record the starting position.
       this.terminalElement.addEventListener('mousedown', (event) => {
-        // If mousedown is not on the input element itself, it might be a selection attempt.
-        if (event.target !== this.inputElement) {
-          this.isAttemptingSelection = true;
+        // We only care about the primary mouse button (usually left).
+        if (event.button === 0) {
+          mouseDownPos = { x: event.clientX, y: event.clientY };
+        } else {
+          mouseDownPos = null; // Ignore other buttons (right-click, etc.)
         }
       });
-    }
-    window.addEventListener('mouseup', () => {
-      // Update synchronously when mouse button is released.
-      this.isAttemptingSelection = false;
-    });
 
-    // Add a click listener to the terminal element to refocus the input
-    if (this.terminalElement) {
+      // 2. On click, decide whether to focus based on mouse movement.
       this.terminalElement.addEventListener('click', (event) => {
-      if (this.inputElement &&
-          event.target !== this.inputElement &&
-          document.activeElement !== this.inputElement) {
-
-        // For single clicks (event.detail === 1), attempt to focus input if no selection occurs.
-        // For multi-clicks (event.detail > 1), do nothing to allow default browser selection.
-        if (event.detail === 1) {
-          requestAnimationFrame(() => {
-            // After the browser has had a chance to process the click (and potential selection initiation):
-            if (this.inputElement && // Re-check existence
-                document.activeElement !== this.inputElement && // Re-check focus
-                window.getSelection().toString() === '' && // No text selected
-                !this.isAttemptingSelection) { // Not in the middle of a drag selection
-              this.inputElement.focus();
-            }
-          });
+        // If the user clicked on an interactive element, do nothing.
+        if (event.target.tagName === 'A' ||
+            event.target.tagName === 'INPUT' ||
+            event.target.tagName === 'BUTTON') {
+          return;
         }
-        // If event.detail > 1 (double/triple click), we explicitly do nothing here,
-        // allowing the browser to handle text selection.
-      }
-    });
+
+        // Check if the mouse moved significantly between mousedown and click.
+        if (mouseDownPos) {
+          const dx = Math.abs(event.clientX - mouseDownPos.x);
+          const dy = Math.abs(event.clientY - mouseDownPos.y);
+
+          // If it didn't move much, it's a true click. Focus the input.
+          if (dx < CLICK_THRESHOLD && dy < CLICK_THRESHOLD) {
+            this.inputElement.focus();
+          }
+        }
+        // If the mouse moved more, it was a drag-select. Do nothing.
+        
+        // Reset for the next click cycle.
+        mouseDownPos = null;
+      });
     }
 
-    // Handle terminal interactions with better text selection support
-    this.setupSelectionHandling();
+    // The old, complex event listeners for mousedown, mouseup, click, and selection handling
+    // have been removed and replaced by the single, consolidated handler above.
+    // The setupSelectionHandling() method is now also obsolete and has been removed.
   }
   
-  /**
-   * Set up text selection handling for the terminal
-   * This allows users to select and copy text from the terminal output
+  /*
+   * The setupSelectionHandling() method has been removed.
+   * Its functionality is now consolidated into the single click handler
+   * in setupEventListeners() for simplicity and stability.
    */
-  setupSelectionHandling() {
-    // Helper function to check if text is currently selected
-    const hasTextSelection = () => window.getSelection().toString().length > 0;
-    
-    // Click handler - only focus input if no text is selected
-    this.terminalElement.addEventListener('click', (event) => {
-      if (!hasTextSelection()) {
-        this.inputElement.focus();
-      } else {
-        // Prevent default to maintain the selection
-        event.preventDefault();
-      }
-    });
-    
-    // Mouseup handler - preserve selection for copy functionality
-    this.terminalElement.addEventListener('mouseup', (event) => {
-      if (hasTextSelection()) {
-        event.preventDefault();
-        // Let the browser's built-in copy functionality work
-      }
-    });
-    
-    // Add copy event support
-    document.addEventListener('keydown', (event) => {
-      // Check for Ctrl+C or Cmd+C (copy command)
-      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        if (hasTextSelection()) {
-          // Let the browser handle the copy
-          // No need to prevent default here
-        }
-      }
-    });
-  }
 
   /**
    * Animate the prompt text with overlapping random rolls.
@@ -463,50 +425,57 @@ class TerminalView {
   }
 
   /**
-   * Display output in the terminal
-   * @param {*} output - Output to display
-   * @param {HTMLElement} container - Optional: A specific container to append to (mostly deprecated by animation logic)
+   * Display output in the terminal.
+   * Handles strings, HTML objects, and arrays of mixed content.
+   * @param {*} output - The content to display.
    */
-  async displayOutput(output, container = null) { // Method becomes async
-    if (!output) return;
-    
-    // The 'container' argument is largely unused now as helpers manage their own line containers
-    // within this.outputElement. If it were to be used, _animateTextOutput would need modification.
+  async displayOutput(output) {
+    if (!output) {
+      this.ensurePromptVisible();
+      return;
+    }
 
     try {
       if (Array.isArray(output)) {
-        let stringBuffer = [];
+        // Handle mixed-content arrays from commands like 'project'
         for (const item of output) {
           if (typeof item === 'string') {
-            stringBuffer.push(item);
-          } else if (item && typeof item === 'object') {
-            // If there are buffered strings, animate them first
-            if (stringBuffer.length > 0) {
-              const combinedString = stringBuffer.join('\n');
-              await this._animateTextOutput(combinedString, 'command-output');
-              stringBuffer = []; // Clear the buffer
-            }
-            // Now handle the object
-            await this.handleResultObject(item);
+            // For strings, wrap in a <pre> tag to preserve whitespace and formatting.
+            const pre = document.createElement('pre');
+            pre.style.margin = '0'; // Override default <pre> margins
+            pre.style.fontFamily = 'inherit'; // Use terminal font
+            pre.textContent = item;
+            this._addStaticOutputLine(pre, 'command-output');
+          } else if (item && item.type === 'html') {
+            // For HTML blocks, create a container and set its innerHTML.
+            const container = document.createElement('div');
+            container.innerHTML = item.html;
+            this._addStaticOutputLine(container, 'command-output');
           }
+          // Add a short delay to create the line-by-line loading effect
+          await new Promise(resolve => setTimeout(resolve, this.LINE_ANIMATION_BASE_DELAY_MS));
         }
-        // After the loop, if there are any remaining strings in the buffer, animate them
-        if (stringBuffer.length > 0) {
-          const combinedString = stringBuffer.join('\n');
-          await this._animateTextOutput(combinedString, 'command-output');
-        }
+      } else if (typeof output === 'object' && output.type === 'html') {
+        // Handle legacy commands returning a single HTML object.
+        const container = document.createElement('div');
+        container.innerHTML = output.html;
+        this._addStaticOutputLine(container, 'command-output');
       } else if (typeof output === 'string') {
+        // Handle simple string output with animation.
         await this._animateTextOutput(output, 'command-output');
-      } else if (output && typeof output === 'object') {
-        await this.handleResultObject(output);
+      } else {
+        // Fallback for any other type of output.
+        await this._animateTextOutput(JSON.stringify(output), 'command-output');
       }
-      
-      this.ensurePromptVisible(); // Ensure prompt is visible after all output is processed
     } catch (error) {
       console.error('Error displaying output:', error);
-      await this._animateTextOutput(`Error displaying output: ${error.message}`, 'terminal-error');
-      this.ensurePromptVisible(); // Also ensure prompt is visible after error output
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'terminal-error';
+      errorMessage.textContent = `Error: ${error.message}`;
+      this._addStaticOutputLine(errorMessage);
     }
+    
+    this.ensurePromptVisible();
   }
 
   /**
