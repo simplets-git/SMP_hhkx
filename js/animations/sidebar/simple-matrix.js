@@ -508,23 +508,15 @@ const SimpleMatrixAnimation = {
             const sideBox = document.createElement('div');
             sideBox.className = `terminal-side-box terminal-side-box-${side}`; // Reuse old class for basic structure
             
-            // Basic positioning (can be refined by CSS)
-
-// Basic positioning (can be refined by CSS)
-sideBox.style.position = 'absolute';
-sideBox.style.top = '0';
-sideBox.style.bottom = '0';
-sideBox.style.width = '300px'; // Initial, will be resized
-sideBox.style.overflow = 'hidden';
-sideBox.style.backgroundColor = 'var(--bg-color)'; // Match terminal background
-sideBox.style.height = '100%'; // Explicitly set height
+            // Styling is handled by the 'terminal-side-box' class in sidebar.css.
+            // Width is set dynamically during resize.
 
             if (side === 'left') {
                 sideBox.style.left = '0';
             } else {
                 sideBox.style.right = '0';
             }
-            terminal.appendChild(sideBox);
+            document.body.appendChild(sideBox);
 
             const grid = new SimpleMatrixGrid(sideBox, side);
 

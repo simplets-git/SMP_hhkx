@@ -1,24 +1,7 @@
 /* Main CSS file for Terminal Interface */
 
-/* Import variables first */
-@import url('variables.css');
-
 /* Import Share Tech Mono font directly */
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-/* Import component styles */
-@import 'components/loading.css';
-@import 'components/mobile.css';
-@import 'components/video.css';
-@import 'components/flexible-content.css';
-@import 'components/project.css';
-@import 'components/command-output.css';
-@import 'components/terminal.css';
-@import 'components/side-buttons.css';
-
-/* Import animations */
-@import 'animations/sidebar.css';
-@import 'animations/matrix.css';
 
 /* Enforce consistent box-sizing and font across all elements */
 * {
@@ -116,4 +99,18 @@ body::-webkit-scrollbar {
   white-space: pre-wrap;
   word-break: break-all;
   margin-bottom: 10px;
+}
+
+/* Global styles for text selection and user interaction */
+.terminal,
+.terminal-output, .terminal-output div, .terminal-output span,
+.terminal-prompt, .terminal-input, .terminal-user-input,
+.terminal-command /* General logged command text */
+{
+  -webkit-touch-callout: text; /* iOS Safari */
+  -webkit-user-select: text;   /* Safari */
+  -khtml-user-select: text;    /* Konqueror HTML */
+  -moz-user-select: text;      /* Firefox */
+  -ms-user-select: text;       /* Internet Explorer/Edge */
+  user-select: text;           /* Non-prefixed version */
 }

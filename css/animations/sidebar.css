@@ -99,6 +99,16 @@ text, .terminal-side-animation span, .matrix-row span {
     --text-color-rgb: 255, 255, 255; /* Default, will be overridden by theme */
 }
 
+/* Fix for the new simple matrix animation grid */
+.simple-matrix-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 /* Responsive breakpoints for animation boxes */
 @media (max-width: 1400px) {
     .terminal-side-box {

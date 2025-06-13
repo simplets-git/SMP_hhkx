@@ -90,9 +90,6 @@ const ThemeManager = {
     // Add the new theme class to the html element
     document.documentElement.classList.add(`${themeName}-theme`);
 
-    // Also remove from body in case they were added by other means or for compatibility
-    document.body.classList.remove('dark-theme', 'light-theme');
-    
     console.log(`Applied theme: ${themeName} to html element`);
   },
   

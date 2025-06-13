@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-theme">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>>_ SIMPLETS</title>
-    <!-- CSS Imports -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/theme-toggle.css">
-    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
-    <!-- Custom Terminal CSS -->
-    <link rel="stylesheet" href="css/custom-terminal.css">
-    <link rel="stylesheet" href="css/music-player.css">
-    <!-- Custom cursor styling -->
-    <!-- Underscore cursor fix -->
-    <!-- Terminal cursor override (removed) -->
-    <!-- Welcome message styling (removed) -->
-    <!-- Custom purple highlight styling -->
-    <!-- Global styles for text selection and user interaction -->
-    <style>
-      .terminal, 
-      .terminal-output, .terminal-output div, .terminal-output span, 
-      .terminal-prompt, .terminal-input, .terminal-user-input, 
-      .terminal-command /* General logged command text */
-      {
-        -webkit-touch-callout: text; /* iOS Safari */
-        -webkit-user-select: text;   /* Safari */
-        -khtml-user-select: text;    /* Konqueror HTML */
-        -moz-user-select: text;      /* Firefox */
-        -ms-user-select: text;       /* Internet Explorer/Edge */
-        user-select: text;           /* Non-prefixed version */
-      }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/theme-toggle.css">
+    <link rel="stylesheet" href="/css/music-player.css">
+    <link rel="stylesheet" href="/css/custom-terminal.css">
+    <link rel="stylesheet" href="/css/purple-highlight.css">
+    <link rel="stylesheet" href="/css/components/command-output.css">
+    <link rel="stylesheet" href="/css/components/commands.css">
+    <link rel="stylesheet" href="/css/components/flexible-content.css">
+    <link rel="stylesheet" href="/css/components/mobile.css">
+    <link rel="stylesheet" href="/css/components/project.css">
+    <link rel="stylesheet" href="/css/components/side-buttons.css">
+    <link rel="stylesheet" href="/css/components/terminal.css">
+    <link rel="stylesheet" href="/css/components/video.css">
+    <link rel="stylesheet" href="/css/components/welcome-message.css">
+    <link rel="stylesheet" href="/css/animations/matrix.css">
+    <link rel="stylesheet" href="/css/animations/sidebar.css">
+
+        <script>
+        // Immediately set the theme from localStorage to prevent a flash of unstyled content.
+        (function() {
+            try {
+                const themeName = localStorage.getItem('preferredTheme') || 'dark';
+                document.documentElement.className = themeName + '-theme';
+            } catch (e) {}
+        })();
+    </script>
 </head>
-<body class="dark-theme">
+<body>
 
     
     <!-- Mobile View -->
@@ -65,7 +65,7 @@
             <div id="music-controls">
                 <p id="song-info" style="display:none;"><a href="https://soundcloud.com/leather-and-lace/funami-fm" target="_blank">Funami FM / Soundcloud</a></p>
                 <div class="button-group">
-                    <button id="play-btn">></button> | <button id="stop-btn">x</button> | <button id="prev-btn"><<</button> | <button id="next-btn">>></button> | <button id="volume-up-btn">+</button> | <button id="volume-down-btn">-</button>
+                    <button id="play-btn">></button> | <button id="stop-btn">x</button> | <button id="prev-btn">&lt;&lt;</button> | <button id="next-btn">&gt;&gt;</button> | <button id="volume-up-btn">+</button> | <button id="volume-down-btn">-</button>
                 </div>
             </div>
         </div>
@@ -78,19 +78,12 @@
         <!-- Side buttons removed, keeping only theme toggle -->
     </div>
 
-    <!-- Custom Terminal scripts -->
-    
-    <!-- Scroll handler for better scrolling experience -->
-    <script src="js/utils/scroll-handler.js"></script>
-    
     <!-- Main JavaScript module that imports all other modules -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="/js/main.js"></script>
 
     <!-- SoundCloud Widget API -->
     <script src="https://w.soundcloud.com/player/api.js"></script>
     <!-- YouTube IFrame Player API -->
     <script src="https://www.youtube.com/iframe_api"></script>
-    <!-- Custom Music Player Script -->
-    <script type="module" src="js/music-player.js"></script>
 </body>
 </html>

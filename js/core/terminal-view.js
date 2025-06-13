@@ -195,24 +195,13 @@ class TerminalView {
     this.promptElement.textContent = terminalCore.getPrompt();
     inputLine.appendChild(this.promptElement);
 
-    // Create a wrapper for the input and the fake cursor
-    const inputContainer = document.createElement('div');
-    inputContainer.className = 'input-container';
-
     // Create input field
     this.inputElement = document.createElement('input');
     this.inputElement.className = 'terminal-input';
     this.inputElement.type = 'text';
     this.inputElement.autocomplete = 'off';
     this.inputElement.spellcheck = false;
-    inputContainer.appendChild(this.inputElement);
-
-    // Create the fake cursor element
-    const fakeCursor = document.createElement('span');
-    fakeCursor.className = 'fake-cursor';
-    inputContainer.appendChild(fakeCursor);
-    
-    inputLine.appendChild(inputContainer);
+    inputLine.appendChild(this.inputElement);
 
     // Add listener for Ctrl+Enter or Cmd+Enter to regenerate SVG
     this.inputElement.addEventListener('keydown', (event) => {
@@ -226,11 +215,11 @@ class TerminalView {
     // Clear the input field's value
     this.inputElement.value = '';
 
-    // Initialize the CursorManager, now with the fake cursor element
+    // Initialize the CursorManager
     this.cursorManager = new CursorManager();
-    this.cursorManager.initialize(this.inputElement, fakeCursor); // New signature
+    this.cursorManager.initialize(inputLine, this.inputElement);
     
-    this.terminalElement.appendChild(inputLine);
+    this.outputElement.appendChild(inputLine);
     
     eventBus.emit('terminal:input:element:ready', this.inputElement);
     
@@ -415,13 +404,10 @@ class TerminalView {
     }
 
     const fullCommandText = terminalCore.getPrompt() + command;
-    const loggedCommandSpan = document.createElement('span');
-    loggedCommandSpan.className = 'terminal-command terminal-user-input';
-    loggedCommandSpan.textContent = fullCommandText;
     
-    // Use _addStaticOutputLine for instant display of the command echo.
-    // The class 'command-output historical-prompt-line' applies to the line container.
-    return this._addStaticOutputLine(loggedCommandSpan, 'command-output historical-prompt-line');
+    // Let _addStaticOutputLine build the correctly styled div with the right class.
+    // This ensures its structure and styling match the active input line, fixing alignment.
+    this._addStaticOutputLine(fullCommandText, 'terminal-user-input');
   }
 
   /**

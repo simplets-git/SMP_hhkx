@@ -4,7 +4,11 @@
  * This file initializes the terminal application and sets up event listeners.
  */
 
-// Import CSS
+
+
+// Import JS modules
+import './music-player.js';
+import './utils/scroll-handler.js';
 
 // Import core modules
 import Terminal from './core/terminal.js';

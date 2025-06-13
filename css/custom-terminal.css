@@ -151,7 +151,7 @@ html, body {
 
 /* Terminal output area */
 .terminal-output {
-  padding: 0 5px;
+  padding: 0 5px; /* Apply consistent horizontal padding to the container */
   margin: 0;
   /* font-family, font-size, line-height, color inherited from #terminal */
   background-color: var(--bg-color);
@@ -225,22 +225,17 @@ html, body {
 /* Error messages - attempting to force indentation */
 
 
-/* Specifically un-indent historical prompt lines */
-#terminal > .terminal-output > div.historical-prompt-line {
-  padding-left: 0;
-}
-
 /* Empty rule block removed */
 
 /* Input line container */
-.terminal-input-line {
+#terminal .terminal-input-line {
   display: flex;
   align-items: center;
   margin: 0;
-  padding: 0 5px;
+  padding: 0; /* Padding is now handled by the .terminal-output container */
   background-color: var(--bg-color);
   min-height: var(--terminal-base-row-height);
-  line-height: 1;
+  /* line-height is now inherited from the parent for consistency */
   /* transition: var(--theme-transition); REMOVED */
   position: relative; /* Ensure it's a positioning context for absolute elements */
 }
@@ -264,7 +259,6 @@ html, body {
   color: var(--text-color); /* Explicit color */
   font-family: 'Share Tech Mono', monospace; /* Explicit font */
   font-size: 18px; /* Explicit font size */
-  line-height: 1; /* Specific line height for input control */
   letter-spacing: 0.4px;
   outline: none;
   flex-grow: 1;
@@ -277,32 +271,16 @@ html, body {
   position: relative; /* From the second rule block */
 }
 
-/* Container for the input field and the fake cursor */
-.input-container {
-  position: relative;
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-}
 
-/* The fake cursor element that replaces the text-based one */
-.fake-cursor {
-  position: absolute;
-  left: 0; /* Position is updated by JS */
-  bottom: 3px; /* Finely tuned for vertical alignment */
-  width: 9.05px; /* Approx width of one character in 'Share Tech Mono' 18px */
-  height: 2px;
-  background-color: var(--text-color);
-  pointer-events: none; /* Prevent it from interfering with mouse events */
-  display: none; /* Visibility is controlled by JS */
-  z-index: 1;
-}
 
 /* No longer needed - using native cursor */
 
 /* User input styling for selectable command lines */
-.terminal-user-input {
+#terminal > .terminal-output > .terminal-user-input {
   user-select: text;
+  padding: 0; /* Padding is now handled by the .terminal-output container */
+  box-sizing: border-box; /* Ensure consistent padding behavior */
+  /* line-height is now inherited from the parent for consistency */
 }
 
 /* Command styling */
@@ -374,7 +352,6 @@ html, body {
   font-size: 18px;
   font-weight: bold;
   padding-bottom: 5px;
-  border-bottom: 1px solid #888;
 }
 
 .project-svg-container {

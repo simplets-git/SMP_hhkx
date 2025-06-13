@@ -55,18 +55,7 @@ class ThemeSwitcher {
    * Toggle between light and dark themes
    */
   toggleTheme() {
-    const currentTheme = ThemeManager.getCurrentTheme();
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    // Set the new theme - this will update CSS variables through body class
-    ThemeManager.setTheme(newTheme);
-    
-    // Refresh the terminal if needed
-    if (this.terminalInstance && this.terminalInstance.refresh) {
-      this.terminalInstance.refresh();
-    }
-    
-    console.log(`[ThemeSwitcher] Toggled theme to: ${newTheme}`);
+    ThemeManager.toggleTheme();
   }
 
   /**

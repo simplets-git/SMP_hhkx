@@ -13,17 +13,13 @@ import { COMMAND_EVENTS } from '../core/terminal-events.js';
  * @returns {Object} Command result
  */
 function handleClearCommand() {
-  // Clear the terminal and show the welcome message only
-  if (window && window.JQTerminalIntegration && window.JQTerminalIntegration.terminal) {
-    window.JQTerminalIntegration.terminal.clear();
-    const welcomeMessage = window.JQTerminalIntegration.getWelcomeMessage
-      ? window.JQTerminalIntegration.getWelcomeMessage()
-      : 'Welcome to the abyss. Type [[;var(--command-text-color);]help] to interact.';
-    window.JQTerminalIntegration.terminal.echo(welcomeMessage);
-    window.JQTerminalIntegration.terminal.echo('');
-    window.JQTerminalIntegration.terminal.echo('');
+  // Use the new Terminal API to clear the screen.
+  // This will also handle re-displaying the greeting and input prompt.
+  if (window.simplets && window.simplets.Terminal) {
+    window.simplets.Terminal.clear();
   }
-  // Return special object to suppress prompt
+
+  // Return special object to suppress prompt, as the clear itself produces no direct output.
   return {
     suppressOutput: true,
     suppressPrompt: true
